@@ -140,7 +140,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
                     Image(systemName: "network")
                         .resizable()
                         .frame(width: 128, height: 128)
-                        .foregroundStyle(Color.accentColor.opacity(0.2))
+                        .compatFG(Color.accentColor.opacity(0.2))
                 }
                 .ignoresSafeArea()
             }

@@ -70,7 +70,7 @@ struct NetworkSettingsSheet: View {
                 } else {
                     Section {
                         Text("no_settings_available")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                     }
                 }
             }
@@ -216,7 +216,7 @@ struct PeerConnDetailSheet: View {
                     if conns.isEmpty {
                         Section("connections") {
                             Text("no_connection_details_available")
-                                .foregroundStyle(.secondary)
+                                .compatFG(.secondary)
                         }
                     } else {
                         ForEach(conns, id: \.connId) { conn in
@@ -251,7 +251,7 @@ struct PeerConnDetailSheet: View {
                 } else {
                     Section {
                         Text("no_peer_information_available")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                     }
                 }
             }
@@ -470,7 +470,7 @@ struct StunInfoSheet: View {
                 } else {
                     Section {
                         Text("no_stun_information_available")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                     }
                 }
             }

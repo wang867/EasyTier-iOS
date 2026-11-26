@@ -16,13 +16,13 @@ concurrency:
 env:
   SCHEME: EasyTier
   BUILD_CONFIGURATION: Release
-  IPA_NAME: EasyTier-nightly-trollstore.ipa
+  IPA_NAME: EasyTier-iOS14-trollstore.ipa
   TEAM_ID: M2G6355ZK7
 
 jobs:
   build-and-release:
-    name: Build and publish TrollStore IPA
-    runs-on: xcode-27
+    name: Build and publish TrollStore IPA (iOS 14)
+    runs-on: macos-15
     timeout-minutes: 90
 
     steps:
@@ -38,7 +38,11 @@ jobs:
           echo "PACKAGE_PATH=${RUNNER_TEMP}/package" >> "${GITHUB_ENV}"
           echo "EXPORT_PATH=${RUNNER_TEMP}/export" >> "${GITHUB_ENV}"
 
-          sudo xcode-select --switch /Applications/Xcode_27.2.app/Contents/Developer
+          # Pick the newest Xcode available on the GitHub-hosted runner.
+          XCODE_PATH="$(ls -d /Applications/Xcode_*.app 2>/dev/null | sort -V | tail -n 1)"
+          if [ -n "${XCODE_PATH}" ]; then
+            sudo xcode-select --switch "${XCODE_PATH}/Contents/Developer"
+          fi
           xcodebuild -version
 
           rustup target add aarch64-apple-ios
@@ -154,8 +158,8 @@ jobs:
       - name: Upload workflow artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          name: EasyTier-nightly-trollstore-${{ github.run_number }}
-          path: ${{ runner.temp }}/export/EasyTier-nightly-trollstore.ipa
+          name: EasyTier-iOS14-trollstore-${{ github.run_number }}
+          path: ${{ runner.temp }}/export/EasyTier-iOS14-trollstore.ipa
           if-no-files-found: error
           retention-days: 14
 

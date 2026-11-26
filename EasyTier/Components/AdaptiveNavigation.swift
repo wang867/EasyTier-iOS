@@ -43,21 +43,10 @@ extension View {
         item: Binding<Enum?>,
         @ViewBuilder destination: @escaping () -> Destination
     ) -> some View {
-        if #available(iOS 17.0, macOS 14.0, *) {
-            return self.navigationDestination(item: item) { _ in
-                destination()
-            }
-        } else {
-            return self.navigationDestination(
-                isPresented: Binding(
-                    get: { item.wrappedValue != nil },
-                    set: { isPresented in
-                        if !isPresented {
-                            item.wrappedValue = nil
-                        }
-                    }
-                )
-            ) {
+        // iOS 14 has no navigationDestination; present the detail view as a sheet.
+        // The binding is cleared on dismissal, matching the original behaviour.
+        return self.sheet(item: item) { _ in
+            NavigationView {
                 destination()
             }
         }
@@ -71,19 +60,11 @@ private struct ColumnGutter: ViewModifier {
 
     func body(content: Content) -> some View {
         content
-            .safeAreaInset(edge: edge, spacing: 0) {
+            .compatSafeAreaInset(edge: edge, spacing: 0) {
                 Color.clear.frame(width: extra)
             }
-            .background {
-                if #available(iOS 27.1, macOS 27.1, *) {
-                    GeometryReader { proxy in
-                        let margins = proxy.contentMargins(for: .container, edges: edge == .leading ? .leading : .trailing)
-                        let systemMargin = edge == .leading ? margins.leading : margins.trailing
-                        Color.clear.onChange(of: systemMargin, initial: true) { _, newValue in
-                            extra = max(0, minimum - newValue)
-                        }
-                    }
-                }
+            .compatBackground {
+                Color.clear
             }
     }
 }

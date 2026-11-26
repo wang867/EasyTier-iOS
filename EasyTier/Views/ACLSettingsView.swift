@@ -64,7 +64,7 @@ struct ACLSettingsView: View {
                     } label: {
                         LabeledContent {
                             Text("\(groupNames.count)")
-                                .foregroundStyle(.secondary)
+                                .compatFG(.secondary)
                         } label: {
                             Label("acl.groups", systemImage: "person.3")
                         }
@@ -140,12 +140,12 @@ private struct ACLChainRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: chain.chainType.systemImage)
-                .foregroundStyle(chain.enabled ? Color.accentColor : Color.secondary)
+                .compatFG(chain.enabled ? Color.accentColor : Color.secondary)
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(chain.name.isEmpty ? chain.chainType.defaultName : chain.name)
-                    .foregroundStyle(chain.enabled ? .primary : .secondary)
+                    .compatFG(chain.enabled ? .primary : .secondary)
                 HStack(spacing: 5) {
                     Text(chain.chainType.localizedKey)
                     Text("•")
@@ -155,14 +155,14 @@ private struct ACLChainRow: View {
                     Text(chain.defaultAction.localizedKey)
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
             }
 
             Spacer()
 
             if !chain.enabled {
                 Image(systemName: "pause.circle.fill")
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
             }
         }
         .padding(.vertical, 2)
@@ -284,12 +284,12 @@ private struct ACLRuleRow: View {
     var body: some View {
         HStack(spacing: 12) {
             Image(systemName: rule.action == .drop ? "hand.raised.fill" : "checkmark.shield.fill")
-                .foregroundStyle(rule.enabled ? rule.action.tint : Color.secondary)
+                .compatFG(rule.enabled ? rule.action.tint : Color.secondary)
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 4) {
                 Text(rule.name.isEmpty ? String(localized: "acl.unnamed_rule") : rule.name)
-                    .foregroundStyle(rule.enabled ? .primary : .secondary)
+                    .compatFG(rule.enabled ? .primary : .secondary)
                 HStack(spacing: 5) {
                     Text(rule.protocolType.localizedKey)
                     Text("•")
@@ -297,10 +297,10 @@ private struct ACLRuleRow: View {
                     Text("• P\(rule.priority)")
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
                 Text(criteria)
                     .font(.caption2.monospaced())
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
                     .lineLimit(2)
             }
         }
@@ -345,7 +345,7 @@ private struct ACLRuleEditorView: View {
                 }
                 LabeledContent("acl.priority") {
                     Text("\(rule.priority)")
-                        .foregroundStyle(.secondary)
+                        .compatFG(.secondary)
                         .monospacedDigit()
                 }
             }
@@ -415,7 +415,7 @@ private struct ACLRuleEditorView: View {
             } footer: {
                 if rule.rateLimit > 0 && rule.burstLimit == 0 {
                     Label("acl.burst_required", systemImage: "exclamationmark.triangle.fill")
-                        .foregroundStyle(.red)
+                        .compatFG(.red)
                 } else {
                     Text("acl.rate_limit_help")
                 }
@@ -491,7 +491,7 @@ private struct ACLGroupSelectionSection: View {
         Section {
             if options.isEmpty {
                 Text("acl.no_groups")
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
             } else {
                 ForEach(options, id: \.self) { groupName in
                     Toggle(groupName, isOn: selectionBinding(groupName))
@@ -543,14 +543,14 @@ private struct ACLGroupEditorView: View {
                         } label: {
                             HStack {
                                 Image(systemName: "person.badge.key.fill")
-                                    .foregroundStyle(Color.accentColor)
+                                    .compatFG(Color.accentColor)
                                     .frame(width: 24)
                                 Text(identity.groupName)
-                                    .foregroundStyle(.primary)
+                                    .compatFG(.primary)
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.caption.bold())
-                                    .foregroundStyle(.tertiary)
+                                    .compatFG(.tertiary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .contentShape(Rectangle())
@@ -566,7 +566,7 @@ private struct ACLGroupEditorView: View {
             Section {
                 if acl.aclV1.group.declares.isEmpty {
                     Text("acl.no_groups")
-                        .foregroundStyle(.secondary)
+                        .compatFG(.secondary)
                 } else {
                     ForEach(acl.aclV1.group.declares) { identity in
                         Toggle(identity.groupName, isOn: membershipBinding(identity.groupName))
@@ -725,7 +725,7 @@ private struct ACLGroupIdentityEditorView: View {
             } footer: {
                 if existingNames.contains(normalizedName) {
                     Text("acl.duplicate_group")
-                        .foregroundStyle(.red)
+                        .compatFG(.red)
                 }
             }
         }
@@ -748,7 +748,7 @@ private struct ACLGroupIdentityEditorView: View {
                 } label: {
                     Image(systemName: "checkmark")
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.automatic)
                 .disabled(!canSave)
             }
         }

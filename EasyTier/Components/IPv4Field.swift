@@ -35,7 +35,7 @@ struct IPv4Field: View {
                     
                     if index < 3 {
                         Text(".")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                             .padding(.horizontal, 1)
                             .padding(.bottom, 2)
                     }
@@ -45,7 +45,7 @@ struct IPv4Field: View {
             
             if let lengthBinding = length {
                 Text("/")
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
                     .padding(.horizontal, plainTextIPInput ? 8 : 2)
                     .padding(.bottom, 2)
                 

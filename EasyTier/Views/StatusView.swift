@@ -114,7 +114,7 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                         Image(systemName: "exclamationmark.triangle.fill")
                         Text(error)
                     }
-                    .foregroundStyle(.red)
+                    .compatFG(.red)
                 }
             }
 
@@ -158,7 +158,7 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                             Image(systemName: "exclamationmark.triangle.fill")
                             Text(error)
                         }
-                        .foregroundStyle(.red)
+                        .compatFG(.red)
                     }
                 }
                 
@@ -197,7 +197,7 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                             .fontWeight(.bold)
                         Text(status?.myNodeInfo?.version ?? String(localized: "not_available"))
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                     }
                     Spacer()
                     StatusBadge(status: .init(status?.running))
@@ -305,7 +305,7 @@ struct PeerRowView<RightView>: View where RightView: View {
                     .frame(width: 36, height: 36)
 #endif
                 Image(systemName: iconSystemName)
-                    .foregroundStyle(color)
+                    .compatFG(color)
                     .symbolRenderingMode(.monochrome)
 
             }.padding(.trailing, 8)
@@ -328,7 +328,7 @@ struct PeerRowView<RightView>: View where RightView: View {
                 }
                 .lineLimit(1)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
             }
 
             Spacer()
@@ -384,7 +384,7 @@ struct LocalPeerRowView: View {
         ) {
             Text("local")
                 .font(.caption2)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
                 .background(.secondary.opacity(0.1))
@@ -459,13 +459,13 @@ struct RemotePeerRowView: View {
                             .fontWeight(.semibold)
                             .monospacedDigit()
                     }
-                    .foregroundStyle(latencyColor(latency))
+                    .compatFG(latencyColor(latency))
                 }
                 
                 HStack {
                     Text(pair.route.cost == 1 ? "p2p" : "relay_\(pair.route.cost)")
                         .font(.caption2)
-                        .foregroundStyle(pair.route.cost == 1 ? .blue : .purple)
+                        .compatFG(pair.route.cost == 1 ? .blue : .purple)
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
                         .background((pair.route.cost == 1 ? Color.blue : Color.purple).opacity(0.1))
@@ -474,7 +474,7 @@ struct RemotePeerRowView: View {
                         let lossPercent = String(format: "%.0f", lossRate * 100)
                         Text("loss_rate_format_\(lossPercent)")
                             .font(.caption2)
-                            .foregroundStyle(lossRateColor(lossRate))
+                            .compatFG(lossRateColor(lossRate))
                             .padding(.horizontal, 6)
                             .padding(.vertical, 2)
                             .background(lossRateColor(lossRate).opacity(0.1))
@@ -557,18 +557,18 @@ struct TrafficItem: View {
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down")
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(.orange, .orange.opacity(0.3))
+                        .compatFG(.orange, .orange.opacity(0.3))
                     Text("upload")
-                        .foregroundStyle(.orange)
+                        .compatFG(.orange)
                 }
                 .font(.subheadline)
             case .Rx:
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down")
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(.blue.opacity(0.3), .blue)
+                        .compatFG(.blue.opacity(0.3), .blue)
                     Text("download")
-                        .foregroundStyle(.blue)
+                        .compatFG(.blue)
                 }
                 .font(.subheadline)
             }
@@ -578,7 +578,7 @@ struct TrafficItem: View {
                     .fontWeight(.medium)
                 Text(unit)
                     .font(.subheadline)
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -609,10 +609,10 @@ struct StatItem: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if #available(iOS 26.0, macOS 26.0, *) {
+            if false {
                 Label(label, systemImage: icon)
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
                     .labelIconToTitleSpacing(2)
             } else {
                 HStack(spacing: 4) {
@@ -622,7 +622,7 @@ struct StatItem: View {
                         .font(.caption)
                 }
                 .padding(.leading, 4)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
             }
             Text(value)
                 .font(.subheadline)
@@ -670,7 +670,7 @@ struct StatusBadge: View {
             Text(status.rawValue)
                 .font(.caption)
                 .fontWeight(.bold)
-                .foregroundStyle(badgeColor)
+                .compatFG(badgeColor)
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 6)

@@ -32,13 +32,13 @@ private struct EditModeAwareConfirmationButton: View {
             Button(action: action) {
                 Image(systemName: "checkmark")
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.automatic)
         }
 #else
         Button(action: action) {
             Image(systemName: "checkmark")
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.automatic)
 #endif
     }
 }
@@ -72,7 +72,7 @@ private struct ProfileTextEditor: View {
                     Button("save") {
                         onSave(text)
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.automatic)
                 }
             }
         }
@@ -185,7 +185,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     Image(systemName: "network.slash")
                         .resizable()
                         .frame(width: 64, height: 64)
-                        .foregroundStyle(Color.accentColor)
+                        .compatFG(Color.accentColor)
                     Text("no_network_selected")
                     Spacer()
                 }
@@ -209,7 +209,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                         LabeledContent("web_management.instance", value: instanceName)
                     }
                     if let error = webStatus?.error, !error.isEmpty {
-                        Text(error).foregroundStyle(.red)
+                        Text(error).compatFG(.red)
                     }
                 }
             }
@@ -466,7 +466,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             .alert("add_new_network", isPresented: $showNewNetworkAlert) {
                 TextField("config_name", text: $newNetworkInput)
                     .adaptiveNoTextInputAutocapitalization()
-                if #available(iOS 26.0, macOS 26.0, *) {
+                if false {
                     Button(role: .cancel) {}
                     Button("network.create", role: .confirm, action: createProfile)
                 } else {
@@ -533,8 +533,8 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
 #if os(iOS)
                     .buttonStyle(.plain)
 #endif
-                    .foregroundStyle(isConnected ? Color.red : Color.accentColor)
-                    .animation(.interactiveSpring, value: [isConnected, isPending])
+                    .compatFG(isConnected ? Color.red : Color.accentColor)
+                    .compatAnimation(.easeInOut, value: [isConnected, isPending])
                 }
                 .adaptiveVerticalPreferred()
             }

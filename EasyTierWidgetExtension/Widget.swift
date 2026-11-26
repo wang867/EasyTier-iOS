@@ -96,7 +96,7 @@ struct VPNStatusWidgetView: View {
                     Text(entry.isConnected ? "vpn_connected" : "vpn_disconnected")
                         .font(.caption)
                         .fontWeight(.bold)
-                        .foregroundStyle(badgeColor)
+                        .compatFG(badgeColor)
                         .lineLimit(1)
                         .minimumScaleFactor(0.7)
                 }
@@ -109,7 +109,7 @@ struct VPNStatusWidgetView: View {
                     Spacer(minLength: 8)
                     Text("EasyTier")
                         .font(.caption)
-                        .foregroundStyle(.secondary)
+                        .compatFG(.secondary)
                         .lineLimit(1)
                 }
             }
@@ -122,7 +122,7 @@ struct VPNStatusWidgetView: View {
             if entry.isConnected {
                 Text(entry.ipAddress ?? "DHCP")
                     .font(family == .systemSmall ? .subheadline : .callout)
-                    .foregroundStyle(.secondary)
+                    .compatFG(.secondary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
             }
@@ -146,7 +146,7 @@ struct VPNStatusWidgetView: View {
                 .lineLimit(1)
                 .controlSize(family == .systemSmall ? .small : .regular)
                 .tint(entry.isConnected ? Color.red : Color.accentColor)
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.automatic)
                 .widgetAccentable()
             }
         }

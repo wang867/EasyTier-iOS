@@ -125,7 +125,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
                             .frame(width: 7, height: 7)
                         Text(statusText)
                             .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                     }
                 }
 
@@ -172,7 +172,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
                 )
                 .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.borderedProminent)
+            .buttonStyle(.automatic)
             .tint(isConnected ? .red : .accentColor)
             .disabled(manager.isLoading || isPending)
 
@@ -201,7 +201,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
         VStack(alignment: .leading, spacing: 5) {
             Label(title, systemImage: systemImage)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .compatFG(.secondary)
             Text(value)
                 .font(.subheadline.weight(.medium))
                 .lineLimit(1)
@@ -215,7 +215,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
     private func errorPanel(_ message: String) -> some View {
         Label(message, systemImage: "exclamationmark.triangle.fill")
             .font(.caption)
-            .foregroundStyle(.red)
+            .compatFG(.red)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(12)
     }

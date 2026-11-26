@@ -72,7 +72,7 @@ struct NetworkEditView: View {
                     Image(systemName: "network")
                         .resizable()
                         .frame(width: 128, height: 128)
-                        .foregroundStyle(Color.accentColor.opacity(0.2))
+                        .compatFG(Color.accentColor.opacity(0.2))
                 }
                 .ignoresSafeArea()
             }
@@ -155,7 +155,7 @@ struct NetworkEditView: View {
                                !publicKey.isEmpty {
                                 (Text("peer_public_key") + Text(verbatim: ": \(publicKey)"))
                                     .font(.caption.monospaced())
-                                    .foregroundStyle(.secondary)
+                                    .compatFG(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                         }
@@ -252,7 +252,7 @@ struct NetworkEditView: View {
                         Group {
                             if profile.secureModeLocalPublicKey.isEmpty {
                                 Text("common_text.empty")
-                                    .foregroundStyle(.secondary)
+                                    .compatFG(.secondary)
                             } else {
                                 Text(verbatim: profile.secureModeLocalPublicKey)
                                     .textSelection(.enabled)
@@ -367,7 +367,7 @@ struct NetworkEditView: View {
                         if let help = flag.help {
                             Text(help)
                                 .font(.caption)
-                                .foregroundStyle(.secondary)
+                                .compatFG(.secondary)
                         }
                     }
                 }
@@ -416,7 +416,7 @@ struct NetworkEditView: View {
                     ListEditor(newItemTitle: "common_text.add_dns", items: $profile.overrideDNS, addItemFactory: { "" }, rowContent: { dns in
                         HStack {
                             Text("address")
-                                .foregroundStyle(.secondary)
+                                .compatFG(.secondary)
                             Spacer()
                             IPv4Field(ip: dns.text)
                         }
@@ -444,7 +444,7 @@ struct NetworkEditView: View {
                 ListEditor(newItemTitle: "common_text.add_exit_node", items: $profile.exitNodes, addItemFactory: { "" }, rowContent: { ip in
                     HStack {
                         Text("address")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                         Spacer()
                         IPv4Field(ip: ip.text)
                     }
@@ -461,7 +461,7 @@ struct NetworkEditView: View {
                     ListEditor(newItemTitle: "common_text.add_route", items: $profile.routes, addItemFactory: NetworkProfile.CIDR.init, rowContent: { cidr in
                         HStack {
                             Text("cidr")
-                                .foregroundStyle(.secondary)
+                                .compatFG(.secondary)
                             Spacer()
                             IPv4Field(ip: cidr.ip, length: cidr.length)
                         }
@@ -492,7 +492,7 @@ struct NetworkEditView: View {
                 VStack(spacing: 8) {
                     HStack {
                         Text("tunnel_proto")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                         Spacer()
                         Picker("tunnel_proto", selection: $forward.proto) {
                             Text("tcp").tag("tcp")
@@ -559,17 +559,17 @@ struct NetworkEditView: View {
                 HStack(spacing: 12) {
                     if proxyCIDR.enableMapping.wrappedValue {
                         Text("map")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                         Spacer()
                         Text(proxyCIDR.wrappedValue.cidrString)
                             .font(.body.monospaced())
                         Image(systemName: "arrow.right")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                         Text(proxyCIDR.wrappedValue.mappedCIDRString)
                             .font(.body.monospaced())
                     } else {
                         Text("proxy")
-                            .foregroundStyle(.secondary)
+                            .compatFG(.secondary)
                         Spacer()
                         Text(proxyCIDR.wrappedValue.cidrString)
                             .font(.body.monospaced())
@@ -615,7 +615,7 @@ struct NetworkEditView: View {
                     } label: {
                         Image(systemName: "checkmark")
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.automatic)
                 }
             }
         }
@@ -678,7 +678,7 @@ struct PeerPublicKeyEditor: View {
                     if let validationError {
                         Label(validationError, systemImage: "exclamationmark.triangle.fill")
                             .font(.caption)
-                            .foregroundStyle(.red)
+                            .compatFG(.red)
                     }
                 } header: {
                     Text("peer_public_key")
@@ -710,7 +710,7 @@ struct PeerPublicKeyEditor: View {
                     } label: {
                         Image(systemName: "checkmark")
                     }
-                    .buttonStyle(.borderedProminent)
+                    .buttonStyle(.automatic)
                     .disabled(
                         publicKey.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
                         validationError != nil
