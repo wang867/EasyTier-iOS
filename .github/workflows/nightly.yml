@@ -174,11 +174,16 @@ jobs:
           )
           for bin in "${BINARIES[@]}"; do
             [ -f "${bin}" ] || continue
+            # Use an executable-relative path so dyld needs no LC_RPATH.
+            case "${bin}" in
+              *PlugIns*)
+                RELOC="@executable_path/../Frameworks/libswift_Concurrency.dylib" ;;
+              *)
+                RELOC="@executable_path/Frameworks/libswift_Concurrency.dylib" ;;
+            esac
             install_name_tool -change \
               /usr/lib/swift/libswift_Concurrency.dylib \
-              @rpath/libswift_Concurrency.dylib "${bin}" 2>/dev/null || true
-            install_name_tool -add_rpath @executable_path/Frameworks "${bin}" 2>/dev/null || true
-            install_name_tool -add_rpath @executable_path/../Frameworks "${bin}" 2>/dev/null || true
+              "${RELOC}" "${bin}" 2>/dev/null || true
           done
 
           (
