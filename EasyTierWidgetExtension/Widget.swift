@@ -1,5 +1,4 @@
 import NetworkExtension
-import AppIntents
 import SwiftUI
 import WidgetKit
 
@@ -68,7 +67,7 @@ struct VPNStatusProvider: TimelineProvider {
     }
 
     private func fetchProfileName() -> String {
-        if getOptions()?.mode == .web { return String(localized: "web_management.title") }
+        if getOptions()?.mode == .web { return NSLocalizedString("web_management.title", comment: "") }
         let defaults = UserDefaults(suiteName: APP_GROUP_ID)
         return defaults?.string(forKey: "selectedProfileName") ?? ""
     }
@@ -168,27 +167,6 @@ struct EasyTierStatusWidget: Widget {
     }
 }
 
-struct ToggleVPNConnectionIntent: AppIntent {
-    static let title: LocalizedStringResource = "toggle_vpn"
-
-    func perform() async throws -> some IntentResult {
-        let managers = try await NETunnelProviderManager.loadAllFromPreferences()
-        guard let manager = managers.first else {
-            throw TunnelManagerError.unavailable
-        }
-
-        let isConnected = [.connecting, .connected, .reasserting].contains(manager.connection.status)
-        if isConnected {
-            manager.connection.stopVPNTunnel()
-        } else {
-            try await connectWithManager(manager)
-        }
-
-        WidgetCenter.shared.reloadTimelines(ofKind: "\(APP_BUNDLE_ID).widget")
-        return .result()
-    }
-}
-
 extension View {
     @ViewBuilder
     func widgetBackgroundStyle() -> some View {
@@ -237,3 +215,14 @@ extension View {
     }
 )
 #endif
+
+
+// iOS 14 compatibility shim for Widget target
+extension View {
+    func compatFG(_ color: Color) -> some View {
+        foregroundColor(color)
+    }
+    func compatFG(_ first: Color, _ second: Color) -> some View {
+        foregroundColor(first)
+    }
+}

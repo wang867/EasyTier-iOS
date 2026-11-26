@@ -55,8 +55,8 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
     }
 
     var appVersion: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? String(localized: "not_available")
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? String(localized: "not_available")
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? NSLocalizedString("not_available", comment: "")
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? NSLocalizedString("not_available", comment: "")
         return "\(version) (\(build))"
     }
 
@@ -108,7 +108,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             Alert(
                 title: Text("profile_storage_conflict_title"),
                 message: Text(
-                    "\(conflict.fileName)\n\n\(String(localized: "profile_storage_conflict_message"))"
+                    "\(conflict.fileName)\n\n\(NSLocalizedString("profile_storage_conflict_message", comment: ""))"
                 ),
                 primaryButton: .destructive(Text("profile_storage_conflict_overwrite")) {
                     resolveProfileMigrationConflict(overwrite: true)
@@ -385,7 +385,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
                 }
             } catch {
                 await MainActor.run {
-                    settingsErrorMessage = .init(String(localized: "export_failed"))
+                    settingsErrorMessage = .init(NSLocalizedString("export_failed", comment: ""))
                 }
             }
             await MainActor.run {
@@ -531,7 +531,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             } catch {
                 await MainActor.run {
                     manager.isAlwaysOnEnabled = !enabled
-                    settingsErrorMessage = .init(String(localized: "always_on_failed"))
+                    settingsErrorMessage = .init(NSLocalizedString("always_on_failed", comment: ""))
                 }
             }
             await MainActor.run {

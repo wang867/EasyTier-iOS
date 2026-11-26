@@ -43,36 +43,36 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
 
     private var statusText: String {
         if manager.isLoading {
-            return String(localized: "menubar.status.loading")
+            return NSLocalizedString("menubar.status.loading", comment: "")
         }
 
         switch manager.status {
         case .invalid:
-            return String(localized: "menubar.status.not_configured")
+            return NSLocalizedString("menubar.status.not_configured", comment: "")
         case .disconnected:
-            return String(localized: "menubar.status.disconnected")
+            return NSLocalizedString("menubar.status.disconnected", comment: "")
         case .connecting:
-            return String(localized: "menubar.status.connecting")
+            return NSLocalizedString("menubar.status.connecting", comment: "")
         case .connected:
-            return String(localized: "menubar.status.connected")
+            return NSLocalizedString("menubar.status.connected", comment: "")
         case .reasserting:
-            return String(localized: "menubar.status.reconnecting")
+            return NSLocalizedString("menubar.status.reconnecting", comment: "")
         case .disconnecting:
-            return String(localized: "menubar.status.disconnecting")
+            return NSLocalizedString("menubar.status.disconnecting", comment: "")
         @unknown default:
-            return String(localized: "menubar.status.unknown")
+            return NSLocalizedString("menubar.status.unknown", comment: "")
         }
     }
 
     private var networkName: String {
         if connectionMode == EasyTierConnectionMode.web.rawValue {
-            return webStatus?.networkName ?? webStatus?.instanceName ?? String(localized: "web_management.title")
+            return webStatus?.networkName ?? webStatus?.instanceName ?? NSLocalizedString("web_management.title", comment: "")
         }
         return selectedProfileName ?? "EasyTier"
     }
 
     private var virtualIPv4: String {
-        status?.myNodeInfo?.virtualIPv4?.description ?? String(localized: "not_available")
+        status?.myNodeInfo?.virtualIPv4?.description ?? NSLocalizedString("not_available", comment: "")
     }
 
     private var peerCount: String {
@@ -146,12 +146,12 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
 
                 HStack(spacing: 12) {
                     compactStat(
-                        title: String(localized: "virtual_ipv4"),
+                        title: NSLocalizedString("virtual_ipv4", comment: ""),
                         value: virtualIPv4,
                         systemImage: "network"
                     )
                     compactStat(
-                        title: String(localized: "peer_info"),
+                        title: NSLocalizedString("peer_info", comment: ""),
                         value: peerCount,
                         systemImage: "person.2"
                     )
@@ -182,7 +182,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
                 Image(systemName: "macwindow")
             }
             .buttonStyle(.bordered)
-            .help(String(localized: "menubar.open"))
+            .help(NSLocalizedString("menubar.open", comment: ""))
             .keyboardShortcut("o")
 
             Button {
@@ -191,7 +191,7 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
                 Image(systemName: "power")
             }
             .buttonStyle(.bordered)
-            .help(String(localized: "menubar.quit"))
+            .help(NSLocalizedString("menubar.quit", comment: ""))
             .keyboardShortcut("q")
         }
         .padding(12)

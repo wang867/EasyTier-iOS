@@ -288,7 +288,7 @@ private struct ACLRuleRow: View {
                 .frame(width: 24)
 
             VStack(alignment: .leading, spacing: 4) {
-                Text(rule.name.isEmpty ? String(localized: "acl.unnamed_rule") : rule.name)
+                Text(rule.name.isEmpty ? NSLocalizedString("acl.unnamed_rule", comment: "") : rule.name)
                     .compatFG(rule.enabled ? .primary : .secondary)
                 HStack(spacing: 5) {
                     Text(rule.protocolType.localizedKey)
@@ -421,7 +421,7 @@ private struct ACLRuleEditorView: View {
                 }
             }
         }
-        .navigationTitle(rule.name.isEmpty ? String(localized: "acl.edit_rule") : rule.name)
+        .navigationTitle(rule.name.isEmpty ? NSLocalizedString("acl.edit_rule", comment: "") : rule.name)
         .scrollDismissesKeyboard(.immediately)
         .formStyle(.grouped)
         .onChange(of: rule.rateLimit) { newValue in

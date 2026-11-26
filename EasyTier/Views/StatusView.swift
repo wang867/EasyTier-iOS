@@ -195,7 +195,7 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                         Text(networkName)
                             .font(.title2)
                             .fontWeight(.bold)
-                        Text(status?.myNodeInfo?.version ?? String(localized: "not_available"))
+                        Text(status?.myNodeInfo?.version ?? NSLocalizedString("not_available", comment: ""))
                             .font(.caption)
                             .compatFG(.secondary)
                     }

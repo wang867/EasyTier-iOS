@@ -92,7 +92,7 @@ struct NetworkSettingsSheet: View {
 
     private func labeledLines(_ label: LocalizedStringKey, values: [String]) -> some View {
         LabeledContent(label) {
-            Text(values.isEmpty ? String(localized: "not_available") : values.joined(separator: "\n"))
+            Text(values.isEmpty ? NSLocalizedString("not_available", comment: "") : values.joined(separator: "\n"))
         }
     }
 
@@ -115,7 +115,7 @@ struct NetworkSettingsSheet: View {
 
     private func formatMatchDomains(_ domains: [String]) -> [String] {
         domains.map { domain in
-            domain.isEmpty ? String(localized: "all_domains") : domain
+            domain.isEmpty ? NSLocalizedString("all_domains", comment: "") : domain
         }
     }
 
