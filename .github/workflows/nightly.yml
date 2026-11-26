@@ -152,8 +152,18 @@ jobs:
 
           (
             cd "${PACKAGE_PATH}"
-            /usr/bin/zip -qry "${EXPORT_PATH}/${IPA_NAME}" Payload
+            /usr/bin/zip -qry "${EXPORT_PATH}/${IPA_NAME}.unpatched" Payload
           )
+
+      - name: Patch minimum OS version to iOS 14.2 for TrollStore
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 ci_scripts/patch_minos.py \
+            "${EXPORT_PATH}/${IPA_NAME}.unpatched" \
+            "${EXPORT_PATH}/${IPA_NAME}" \
+            14.2
+          rm -f "${EXPORT_PATH}/${IPA_NAME}.unpatched"
 
       - name: Upload workflow artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

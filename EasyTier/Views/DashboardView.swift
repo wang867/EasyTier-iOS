@@ -213,8 +213,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
                 }
             }
-            .formStyle(.grouped)
-        } else {
+                    } else {
             WebManagementEditView(
                 server: $webServer,
                 hostname: $webHostname,
@@ -449,8 +448,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
 #endif
                 }
             }
-            .formStyle(.grouped)
-            .navigationTitle("device.management")
+                        .navigationTitle("device.management")
             .adaptiveNavigationBarTitleInline()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
@@ -562,7 +560,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             webStatusTask = Task { @MainActor in
                 while !Task.isCancelled {
                     refreshWebStatus()
-                    try? await Task.sleep(for: .seconds(2))
+                    try? await Task.sleep(nanoseconds: 2_000_000_000)
                 }
             }
         }
@@ -582,8 +580,8 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             // External changes (e.g. Shortcuts) already saved their own options.
             refreshWebStatus()
         }
-        .task(id: lastSelected) {
-            await synchronizeSelectedProfile()
+        .onAppear {
+            Task { await synchronizeSelectedProfile() }
         }
         .onChange(of: selectedSession.session) { session in
             currentProfile = session?.document.profile ?? NetworkProfile()
