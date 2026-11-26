@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: nightly-${{ github.run_id }}
+  group: ios14-build-${{ github.run_id }}
   cancel-in-progress: false
 
 env:
