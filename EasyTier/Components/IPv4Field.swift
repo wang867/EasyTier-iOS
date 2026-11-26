@@ -11,7 +11,6 @@ struct IPv4Field: View {
     var length: Binding<String>?
     var disabledLengthEdit: Bool
     
-    @FocusState private var focusedField: Int?
     @State private var octets: [String] = ["", "", "", ""]
     
     init(ip: Binding<String>, length: Binding<String>? = nil, disabledLengthEdit: Bool = false) {
@@ -23,11 +22,11 @@ struct IPv4Field: View {
     var body: some View {
         HStack(spacing: 0) {
             if plainTextIPInput {
-                TextField("0.0.0.0", text: $ipAddress, prompt: Text("0.0.0.0"))
+                TextField("0.0.0.0", text: $ipAddress)
                     .labelsHidden()
                     .decimalKeyboardType()
                     .multilineTextAlignment(.trailing)
-                    .font(.body.monospaced())
+                    .font(.body.compatMonospaced())
             } else {
 #if os(iOS)
                 ForEach(0..<4, id: \.self) { index in
@@ -50,13 +49,13 @@ struct IPv4Field: View {
                     .padding(.bottom, 2)
                 
                 if plainTextIPInput {
-                    TextField("32", text: lengthBinding, prompt: Text("32"))
+                    TextField("32", text: lengthBinding)
                         .labelsHidden()
                         .disabled(disabledLengthEdit)
                         .numberKeyboardType()
                         .multilineTextAlignment(.trailing)
                         .fixedSize(horizontal: true, vertical: false)
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                 } else {
 #if os(iOS)
                     TextField("32", text: Binding(
@@ -67,8 +66,7 @@ struct IPv4Field: View {
                     .numberKeyboardType()
                     .multilineTextAlignment(.center)
                     .frame(width: 40)
-                    .focused($focusedField, equals: 4)
-                    .font(.body.monospaced())
+                    .font(.body.compatMonospaced())
 #endif
                 }
             }
@@ -81,9 +79,6 @@ struct IPv4Field: View {
                 syncOctetsFromExternal()
             }
         }
-        .onDisappear {
-            focusedField = nil
-        }
     }
     
 #if os(iOS)
@@ -95,16 +90,9 @@ struct IPv4Field: View {
         .keyboardType(index < 3 ? .decimalPad : .numberPad)
         .multilineTextAlignment(.center)
         .frame(minWidth: 30, maxWidth: 45)
-        .focused($focusedField, equals: index)
-        .font(.body.monospaced())
+        .font(.body.compatMonospaced())
     }
 #endif
-    
-    @MainActor
-    private func setFocusedField(_ field: Int?) {
-        focusedField = field
-    }
-
     private func processOctetInput(oldValue: String, newValue: String, at index: Int) {
         if oldValue == newValue { return }
 
@@ -116,7 +104,6 @@ struct IPv4Field: View {
             if !octets[index].isEmpty {
                 octets[index] = newValue.replacingOccurrences(of: "/", with: "")
                 updateIPBinding()
-                setFocusedField(4)
                 return
             }
         }
@@ -129,7 +116,6 @@ struct IPv4Field: View {
             if !octets[index].isEmpty && index < 3 {
                 octets[index] = newValue.replacingOccurrences(of: ".", with: "")
                 updateIPBinding()
-                setFocusedField(index + 1)
                 return
             }
         }
@@ -139,7 +125,7 @@ struct IPv4Field: View {
         if filtered.isEmpty && !octets[index].isEmpty {
             octets[index] = ""
             updateIPBinding()
-            if index > 0 { setFocusedField(index - 1) }
+            if index > 0 { }
             return
         }
 
@@ -147,7 +133,6 @@ struct IPv4Field: View {
             octets[index] = String(max(min(num, 255), 0))
 
             if filtered.count >= 3 {
-                setFocusedField(index + 1)
             }
             updateIPBinding()
         }
@@ -156,7 +141,6 @@ struct IPv4Field: View {
     private func processLengthInput(_ newValue: String, binding: Binding<String>) {
         if newValue.isEmpty && !binding.wrappedValue.isEmpty {
             binding.wrappedValue = ""
-            setFocusedField(3)
             return
         }
 
@@ -213,9 +197,7 @@ struct IPv4Field: View {
         }
 
         if components.count > 1 && length != nil {
-            setFocusedField(4)
         } else {
-            setFocusedField(3)
         }
     }
 }

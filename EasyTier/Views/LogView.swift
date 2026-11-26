@@ -30,7 +30,6 @@ struct LogView<Manager: NetworkExtensionManagerProtocol>: View {
                             ForEach(tailer.logContent) { line in
                                 Text(line.text)
                                     .font(.system(.footnote, design: .monospaced))
-                                    .textSelection(.enabled)
                             }
                             Text("").id(bottomID)
                         }

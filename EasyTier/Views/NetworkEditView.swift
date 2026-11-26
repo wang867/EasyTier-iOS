@@ -36,7 +36,6 @@ struct NetworkEditView: View {
                 NavigationLink("port_forwards", value: EditPane.portForwards)
                 NavigationLink("acl.title", value: EditPane.acl)
             }
-            .scrollDismissesKeyboard(.immediately)
 #else
             Form {
                 basicSettings
@@ -46,7 +45,6 @@ struct NetworkEditView: View {
                 NavigationLink("port_forwards") { portForwardsSettings }
                 NavigationLink("acl.title") { ACLSettingsView(acl: $profile.acl) }
             }
-            .formStyle(.grouped)
 #endif
         }
     }
@@ -77,12 +75,11 @@ struct NetworkEditView: View {
                 .ignoresSafeArea()
             }
         }
-        .scrollDismissesKeyboard(.immediately)
     }
 
     var basicSettings: some View {
         Group {
-            Section("virtual_ipv4") {
+            Section(header: Text("virtual_ipv4")) {
                 Toggle("dhcp", isOn: $profile.dhcp)
 
                 if !profile.dhcp {
@@ -92,12 +89,11 @@ struct NetworkEditView: View {
                 }
             }
 
-            Section("network") {
+            Section(header: Text("network")) {
                 LabeledContent("network_name") {
                     TextField(
                         "easytier",
                         text: $profile.networkName,
-                        prompt: Text("easytier")
                     )
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
@@ -107,7 +103,6 @@ struct NetworkEditView: View {
                     SecureField(
                         "common_text.empty",
                         text: $profile.networkSecret,
-                        prompt: Text("common_text.empty")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -117,7 +112,6 @@ struct NetworkEditView: View {
                     TextField(
                         "common_text.default",
                         text: $profile.hostname,
-                        prompt: Text("common_text.default")
                     )
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
@@ -145,16 +139,15 @@ struct NetworkEditView: View {
                             TextField(
                                 "example.peer_url",
                                 text: peer.uri,
-                                prompt: Text("example.peer_url")
                             )
                             .labelsHidden()
-                            .font(.body.monospaced())
+                            .font(.body.compatMonospaced())
 
                             if let publicKey = peer.wrappedValue.peerPublicKey?
                                 .trimmingCharacters(in: .whitespacesAndNewlines),
                                !publicKey.isEmpty {
                                 (Text("peer_public_key") + Text(verbatim: ": \(publicKey)"))
-                                    .font(.caption.monospaced())
+                                    .font(.caption.compatMonospaced())
                                     .compatFG(.secondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
@@ -186,7 +179,6 @@ struct NetworkEditView: View {
                                 }
                             }
                         ),
-                        prompt: Text("common_text.default")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -205,7 +197,6 @@ struct NetworkEditView: View {
                                 }
                             }
                         ),
-                        prompt: Text("example.instance_recv_bps_limit")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -240,11 +231,10 @@ struct NetworkEditView: View {
                                 get: { profile.secureModeLocalPrivateKey },
                                 set: { profile.updateSecureModePrivateKey($0) }
                             ),
-                            prompt: Text("common_text.empty"),
                             axis: .vertical
                         )
                         .labelsHidden()
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                         .adaptiveNoTextInputAutocapitalization()
                         .autocorrectionDisabled()
                     }
@@ -255,10 +245,9 @@ struct NetworkEditView: View {
                                     .compatFG(.secondary)
                             } else {
                                 Text(verbatim: profile.secureModeLocalPublicKey)
-                                    .textSelection(.enabled)
                             }
                         }
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                     }
                 }
             } header: {
@@ -267,7 +256,7 @@ struct NetworkEditView: View {
                 Text("secure_mode_help")
             }
             
-            Section("vpn_portal_config") {
+            Section(header: Text("vpn_portal_config")) {
                 Toggle(
                     "common_text.enable",
                     isOn: $profile.enableVPNPortal
@@ -281,7 +270,6 @@ struct NetworkEditView: View {
                             "example.vpn_portal_listen_port",
                             value: $profile.vpnPortalListenPort,
                             formatter: NumberFormatter(),
-                            prompt: Text("example.vpn_portal_listen_port")
                         )
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
@@ -290,15 +278,14 @@ struct NetworkEditView: View {
                 }
             }
             
-            Section("listener_urls") {
+            Section(header: Text("listener_urls")) {
                 ListEditor(newItemTitle: "common_text.add_listener_url", items: $profile.listenerURLs, addItemFactory: { "" }, rowContent: {
                     TextField(
                         "example.listener_url",
                         text: $0.text,
-                        prompt: Text("example.listener_url")
                     )
                         .labelsHidden()
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                 })
             }
             
@@ -309,10 +296,9 @@ struct NetworkEditView: View {
                         TextField(
                             "example.network_name",
                             text: $0.text,
-                            prompt: Text("example.network_name")
                         )
                             .labelsHidden()
-                            .font(.body.monospaced())
+                            .font(.body.compatMonospaced())
                     })
                 }
             } header: {
@@ -321,7 +307,7 @@ struct NetworkEditView: View {
                 Text("relay_network_whitelist_help")
             }
             
-            Section("socks5") {
+            Section(header: Text("socks5")) {
                 Toggle(
                     "common_text.enable",
                     isOn: $profile.enableSocks5
@@ -332,7 +318,6 @@ struct NetworkEditView: View {
                             "example.socks5_port",
                             value: $profile.socks5Port,
                             formatter: NumberFormatter(),
-                            prompt: Text("example.socks5_port")
                         )
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
@@ -346,10 +331,9 @@ struct NetworkEditView: View {
                     TextField(
                         "example.mapped_listener_url",
                         text: $0.text,
-                        prompt: Text("example.mapped_listener_url")
                     )
                         .labelsHidden()
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                 })
             } header: {
                 Text("mapped_listeners")
@@ -357,7 +341,7 @@ struct NetworkEditView: View {
                 Text("mapped_listeners_help")
             }
 
-            Section("flags_switch") {
+            Section(header: Text("flags_switch")) {
                 ForEach(NetworkProfile.boolFlags) { flag in
                     Toggle(isOn: Binding<Bool>(
                         get: { $profile.wrappedValue[keyPath: flag.keyPath] },
@@ -374,8 +358,6 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("advanced_settings")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .listEditingToolbar(
             isVisible: !profile.listenerURLs.isEmpty
                 || (profile.enableRelayNetworkWhitelist && !profile.relayNetworkWhitelist.isEmpty)
@@ -395,7 +377,6 @@ struct NetworkEditView: View {
                         TextField(
                             "example.tld_dns_zone",
                             text: $profile.magicDNSTLD,
-                            prompt: Text("example.tld_dns_zone")
                         )
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
@@ -429,8 +410,6 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("dns_settings")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .listEditingToolbar(
             isVisible: profile.enableOverrideDNS && !profile.overrideDNS.isEmpty
         )
@@ -474,11 +453,9 @@ struct NetworkEditView: View {
             }
         }
         .navigationTitle("route_settings")
-        .scrollDismissesKeyboard(.immediately)
         .sheet(isPresented: $showProxyCIDREditor) {
             proxyCIDREditor
         }
-        .formStyle(.grouped)
         .listEditingToolbar(
             isVisible: !profile.proxyCIDRs.isEmpty
                 || !profile.exitNodes.isEmpty
@@ -505,7 +482,6 @@ struct NetworkEditView: View {
                         TextField(
                             "port_forwards_bind_addr",
                             text: $forward.bindAddr,
-                            prompt: Text("port_forwards_bind_addr")
                         )
                         .labelsHidden()
                         Text(":")
@@ -513,7 +489,6 @@ struct NetworkEditView: View {
                             "port",
                             value: $forward.bindPort,
                             formatter: NumberFormatter(),
-                            prompt: Text("port")
                         )
                         .labelsHidden()
                         .frame(width: 60)
@@ -529,7 +504,6 @@ struct NetworkEditView: View {
                         TextField(
                             "port_forwards_dst_addr",
                             text: $forward.destAddr,
-                            prompt: Text("port_forwards_dst_addr")
                         )
                         .labelsHidden()
                         Text(":")
@@ -537,7 +511,6 @@ struct NetworkEditView: View {
                             "port",
                             value: $forward.destPort,
                             formatter: NumberFormatter(),
-                            prompt: Text("port")
                         )
                         .labelsHidden()
                         .frame(width: 60)
@@ -548,13 +521,11 @@ struct NetworkEditView: View {
             })
         }
         .navigationTitle("port_forwards")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .listEditingToolbar(isVisible: !profile.portForwards.isEmpty)
     }
     
     var proxyCIDRsSettings: some View {
-        Section("common_text.proxy_cidr") {
+        Section(header: Text("common_text.proxy_cidr")) {
             ListEditor(newItemTitle: "common_text.add_proxy_cidr", items: $profile.proxyCIDRs, addItemFactory: NetworkProfile.ProxyCIDR.init, rowContent: { proxyCIDR in
                 HStack(spacing: 12) {
                     if proxyCIDR.enableMapping.wrappedValue {
@@ -562,17 +533,17 @@ struct NetworkEditView: View {
                             .compatFG(.secondary)
                         Spacer()
                         Text(proxyCIDR.wrappedValue.cidrString)
-                            .font(.body.monospaced())
+                            .font(.body.compatMonospaced())
                         Image(systemName: "arrow.right")
                             .compatFG(.secondary)
                         Text(proxyCIDR.wrappedValue.mappedCIDRString)
-                            .font(.body.monospaced())
+                            .font(.body.compatMonospaced())
                     } else {
                         Text("proxy")
                             .compatFG(.secondary)
                         Spacer()
                         Text(proxyCIDR.wrappedValue.cidrString)
-                            .font(.body.monospaced())
+                            .font(.body.compatMonospaced())
                     }
                 }
                 .contentShape(Rectangle())
@@ -582,18 +553,17 @@ struct NetworkEditView: View {
                 }
             })
         }
-        .formStyle(.grouped)
     }
     
     var proxyCIDREditor: some View {
         NavigationStack {
             Form {
-                Section("common_text.proxy_cidr") {
+                Section(header: Text("common_text.proxy_cidr")) {
                     LabeledContent("cidr") {
                         IPv4Field(ip: $editingProxyCIDR.cidr, length: $editingProxyCIDR.length)
                     }
                 }
-                Section("common_text.mapped_cidr") {
+                Section(header: Text("common_text.mapped_cidr")) {
                     Toggle("common_text.enable", isOn: $editingProxyCIDR.enableMapping)
                     if editingProxyCIDR.enableMapping {
                         LabeledContent("cidr") {
@@ -602,7 +572,6 @@ struct NetworkEditView: View {
                     }
                 }
             }
-            .formStyle(.grouped)
             .navigationTitle("common_text.edit_proxy_cidr")
             .adaptiveNavigationBarTitleInline()
             .toolbar {
@@ -629,7 +598,7 @@ struct PeerPublicKeyEditContext: Identifiable {
 }
 
 struct PeerPublicKeyEditor: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     let context: PeerPublicKeyEditContext
     let onSave: (String?) -> Void
@@ -654,11 +623,10 @@ struct PeerPublicKeyEditor: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("initial_node") {
+                Section(header: Text("initial_node")) {
                     LabeledContent("URL") {
                         Text(context.uri)
-                            .font(.body.monospaced())
-                            .textSelection(.enabled)
+                            .font(.body.compatMonospaced())
                     }
                 }
 
@@ -666,11 +634,10 @@ struct PeerPublicKeyEditor: View {
                     TextField(
                         "peer_public_key",
                         text: $publicKey,
-                        prompt: Text("peer_public_key"),
                         axis: .vertical
                     )
                     .labelsHidden()
-                    .font(.body.monospaced())
+                    .font(.body.compatMonospaced())
                     .lineLimit(2...4)
                     .adaptiveNoTextInputAutocapitalization()
                     .autocorrectionDisabled()
@@ -688,20 +655,19 @@ struct PeerPublicKeyEditor: View {
 
                 if !context.publicKey.isEmpty {
                     Section {
-                        Button("remove_peer_public_key", role: .destructive) {
+                        Button("remove_peer_public_key") {
                             onSave(nil)
-                            dismiss()
+                            presentationMode.wrappedValue.dismiss()
                         }
                     }
                 }
             }
-            .formStyle(.grouped)
             .navigationTitle("set_peer_public_key")
             .adaptiveNavigationBarTitleInline()
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("common.cancel") {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -726,7 +692,7 @@ struct PeerPublicKeyEditor: View {
             peerURI: context.uri
         ) else { return }
         onSave(normalized)
-        dismiss()
+        presentationMode.wrappedValue.dismiss()
     }
 }
 

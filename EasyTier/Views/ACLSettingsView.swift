@@ -75,14 +75,12 @@ struct ACLSettingsView: View {
             }
         }
         .navigationTitle("acl.title")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .confirmationDialog(
             "acl.disable_confirmation",
             isPresented: $showDisableConfirmation,
             titleVisibility: .visible
         ) {
-            Button("acl.disable", role: .destructive) {
+            Button("acl.disable") {
                 withAnimation { acl = nil }
             }
         } message: {
@@ -202,7 +200,7 @@ private struct ACLChainEditorView: View {
                 }
             }
 
-            Section("acl.chain_description") {
+            Section(header: Text("acl.chain_description")) {
                 TextField("acl.chain_description_placeholder", text: $chain.description, axis: .vertical)
                     .lineLimit(2...4)
             }
@@ -237,8 +235,6 @@ private struct ACLChainEditorView: View {
             }
         }
         .navigationTitle(chain.name.isEmpty ? "ACL Chain" : chain.name)
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .listEditingToolbar(isVisible: !chain.rules.isEmpty)
     }
 
@@ -299,7 +295,7 @@ private struct ACLRuleRow: View {
                 .font(.caption)
                 .compatFG(.secondary)
                 Text(criteria)
-                    .font(.caption2.monospaced())
+                    .font(.caption2.compatMonospaced())
                     .compatFG(.secondary)
                     .lineLimit(2)
             }
@@ -346,11 +342,11 @@ private struct ACLRuleEditorView: View {
                 LabeledContent("acl.priority") {
                     Text("\(rule.priority)")
                         .compatFG(.secondary)
-                        .monospacedDigit()
+                        .compatMonospacedDigit()
                 }
             }
 
-            Section("acl.rule_description") {
+            Section(header: Text("acl.rule_description")) {
                 TextField("acl.rule_description_placeholder", text: $rule.description, axis: .vertical)
                     .lineLimit(2...4)
             }
@@ -397,14 +393,14 @@ private struct ACLRuleEditorView: View {
             Section {
                 Toggle("acl.stateful", isOn: $rule.stateful)
                 LabeledContent("acl.rate_limit") {
-                    TextField("0", text: uint32Binding($rule.rateLimit), prompt: Text("0"))
+                    TextField("0", text: uint32Binding($rule.rateLimit))
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
                         .numberKeyboardType()
                         .frame(maxWidth: 140)
                 }
                 LabeledContent("acl.burst_limit") {
-                    TextField("0", text: uint32Binding($rule.burstLimit), prompt: Text("0"))
+                    TextField("0", text: uint32Binding($rule.burstLimit))
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
                         .numberKeyboardType()
@@ -422,8 +418,6 @@ private struct ACLRuleEditorView: View {
             }
         }
         .navigationTitle(rule.name.isEmpty ? NSLocalizedString("acl.edit_rule", comment: "") : rule.name)
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .onChange(of: rule.rateLimit) { newValue in
             if newValue > 0 && rule.burstLimit == 0 {
                 rule.burstLimit = max(1, newValue)
@@ -442,9 +436,9 @@ private struct ACLStringListEditor: View {
         Section {
             ForEach(Array(values.indices), id: \.self) { index in
                 HStack {
-                    TextField("", text: valueBinding(at: index), prompt: Text(verbatim: placeholder))
+                    TextField("", text: valueBinding(at: index))
                         .labelsHidden()
-                        .font(.body.monospaced())
+                        .font(.body.compatMonospaced())
                         .adaptiveNoTextInputAutocapitalization()
                         .autocorrectionDisabled()
                     Button(role: .destructive) {
@@ -579,8 +573,6 @@ private struct ACLGroupEditorView: View {
             }
         }
         .navigationTitle("acl.groups")
-        .scrollDismissesKeyboard(.immediately)
-        .formStyle(.grouped)
         .listEditingToolbar(isVisible: !acl.aclV1.group.declares.isEmpty)
         .sheet(item: $editingGroup) { context in
             NavigationStack {
@@ -680,7 +672,7 @@ private struct ACLGroupEditorView: View {
 }
 
 private struct ACLGroupIdentityEditorView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
     @State private var identity: ACLGroupIdentity
     let existingNames: Set<String>
     let onSave: (ACLGroupIdentity) -> Void
@@ -717,7 +709,6 @@ private struct ACLGroupIdentityEditorView: View {
                     SecureField(
                         "common_text.empty",
                         text: $identity.groupSecret,
-                        prompt: Text("common_text.empty")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -731,11 +722,10 @@ private struct ACLGroupIdentityEditorView: View {
         }
         .navigationTitle("acl.edit_group")
         .adaptiveNavigationBarTitleInline()
-        .formStyle(.grouped)
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button {
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "xmark")
                 }
@@ -744,7 +734,7 @@ private struct ACLGroupIdentityEditorView: View {
                 Button {
                     identity.groupName = normalizedName
                     onSave(identity)
-                    dismiss()
+                    presentationMode.wrappedValue.dismiss()
                 } label: {
                     Image(systemName: "checkmark")
                 }

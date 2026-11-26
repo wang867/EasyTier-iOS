@@ -65,7 +65,6 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             AdaptiveNavigation(primaryColumn, secondaryColumn, showNav: $selectedPane)
                 .navigationTitle("settings")
                 .adaptiveNavigationBarTitleInline()
-                .scrollDismissesKeyboard(.immediately)
         }
     }
     
@@ -79,7 +78,6 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             Form {
                 settingsContent
             }
-            .formStyle(.grouped)
 #endif
         }
         .alert(item: $settingsErrorMessage) { msg in
@@ -149,14 +147,13 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
     
     var settingsContent: some View {
         Group {
-            Section("general") {
+            Section(header: Text("general")) {
                 LabeledContent("status_refresh_rate") {
                     HStack {
                         TextField(
                             "1.0",
                             value: $statusRefreshInterval,
                             formatter: NumberFormatter(),
-                            prompt: Text("1.0")
                         )
                         .labelsHidden()
                         .contentShape(Rectangle())
@@ -190,7 +187,6 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
                         "1000",
                         value: $logPreservedLines,
                         formatter: NumberFormatter(),
-                        prompt: Text("1000")
                     )
                     .labelsHidden()
                     .contentShape(Rectangle())
@@ -235,7 +231,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             }
             .disabled(manager.status != .disconnected)
             
-            Button("reset_to_default", role: .destructive) {
+            Button("reset_to_default") {
                 showResetAlert = true
             }
 #if os(macOS)
@@ -243,7 +239,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             .tint(.red)
 #endif
 
-            Section("about.title") {
+            Section(header: Text("about.title")) {
                 LabeledContent("app") {
                     Text("EasyTier")
                 }
@@ -266,7 +262,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
     
     var openSourceLicenseView: some View {
         List {
-            Section("EasyTier-iOS") {
+            Section(header: Text("EasyTier-iOS")) {
                 Text("""
             Copyright (C) 2026  Chenx Dust and Yin Mo
             
@@ -276,9 +272,9 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             
             You should have received a copy of the GNU General Public License along with this program. If not, see <http://www.gnu.org/licenses/>.
             """)
-                .font(.caption.monospaced())
+                .font(.caption.compatMonospaced())
             }
-            Section("EasyTier") {
+            Section(header: Text("EasyTier")) {
                 Text("""
             GNU LESSER GENERAL PUBLIC LICENSE
 
@@ -345,9 +341,9 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
 
             If the Library as you received it specifies that a proxy can decide whether future versions of the GNU Lesser General Public License shall apply, that proxy's public statement of acceptance of any version is permanent authorization for you to choose that version for the Library.
             """)
-                .font(.caption.monospaced())
+                .font(.caption.compatMonospaced())
             }
-            Section("TOMLKit") {
+            Section(header: Text("TOMLKit")) {
                 Text("""
             MIT License
 
@@ -359,7 +355,7 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
 
             THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             """)
-                .font(.caption.monospaced())
+                .font(.caption.compatMonospaced())
             }
         }
         .navigationTitle("about.license")

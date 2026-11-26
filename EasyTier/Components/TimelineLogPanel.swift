@@ -75,7 +75,6 @@ struct TimelineRow: View {
                     .font(.system(.caption, design: .monospaced))
                     .compatFG(.secondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .textSelection(.enabled)
             }
             .padding(.bottom, 24)
         }

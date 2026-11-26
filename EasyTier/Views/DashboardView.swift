@@ -203,7 +203,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             StatusView(webStatus?.networkName ?? webStatus?.instanceName ?? NSLocalizedString("web_management.title", comment: ""), manager: manager)
         } else if isConnected {
             Form {
-                Section("web_management.title") {
+                Section(header: Text("web_management.title")) {
                     LabeledContent("web_management.status.label", value: webStatusLabel)
                     if let instanceName = webStatus?.instanceName, !instanceName.isEmpty {
                         LabeledContent("web_management.instance", value: instanceName)
@@ -299,7 +299,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
     var manageSheet: some View {
         NavigationStack {
             Form {
-                Section("web_management.connection_mode") {
+                Section(header: Text("web_management.connection_mode")) {
                     Picker("web_management.connection_mode", selection: connectionModeBinding) {
                         Text("web_management.mode.local").tag(EasyTierConnectionMode.local)
                         Text("web_management.title").tag(EasyTierConnectionMode.web)
@@ -307,7 +307,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     .pickerStyle(.segmented)
                     .disabled(isPending || isConnected)
                 }
-                Section("network") {
+                Section(header: Text("network")) {
                     let profiles = ProfileStore.loadIndexOrEmpty().map{ IdenticalTextItem($0) }
                     ForEach(profiles) { item in
                         HStack {
@@ -385,7 +385,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                         }
                     }
                 }
-                Section("device.management") {
+                Section(header: Text("device.management")) {
                     Button {
                         showNewNetworkAlert = true
                     } label: {
@@ -656,7 +656,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             Button("icloud_conflict_use_remote") {
                 resolveConflict(useLocal: false)
             }
-            Button("common.cancel", role: .cancel) {}
+            Button("common.cancel") {}
         } message: {
             if conflictDetails.isEmpty {
                 Text("icloud_conflict_message")

@@ -133,5 +133,78 @@ extension View {
     func compatAnimation<V: Equatable>(_ animation: Animation, value: V) -> some View {
         self.animation(animation)
     }
+
+    // task(id:) (iOS 15+) -> plain task (runs on appear)
+    func compatTask<V: Equatable>(id: V, priority: TaskPriority? = nil, @ViewBuilder action: @escaping () async -> Void) -> some View {
+        self.onAppear { Task(priority: priority) { await action() } }
+    }
+
+    // background(_:ignoresSafeAreaEdges:) (iOS 15+) -> plain background
+    func compatBackgroundIgnoring<Content: View>(_ content: Content, edges: Edge.Set = .all) -> some View {
+        self.background(content)
+    }
+
+    // lineLimit(_:reservesSpace:) (iOS 15+) -> lineLimit(_:)
+    func compatLineLimit(_ limit: Int, reservesSpace: Bool = false) -> some View {
+        self.lineLimit(limit)
+    }
 }
+
+// Font.compatMonospaced() (iOS 15+) -> system design (iOS 13+)
+extension Font {
+    func compatMonospaced() -> Font {
+        self
+    }
+    func compatMonospacedDigit() -> Font {
+        self
+    }
+}
+
+// Color.tertiary (iOS 15+) -> gray
+extension Color {
+    static var compatTertiary: Color { Color.gray.opacity(0.6) }
+    static var compatSecondary: Color { Color.gray }
+}
+
+// HorizontalEdge (iOS 15+) -> simple enum
+enum CompatHorizontalEdge {
+    case leading
+    case trailing
+}
+typealias HorizontalEdge = CompatHorizontalEdge
+
+// ViewThatFits (iOS 15+) -> simple fallback (first view)
+struct CompatViewThatFits<Content: View>: View {
+    let content: Content
+    init(@ViewBuilder content: () -> Content) { self.content = content() }
+    // Accept and ignore the axis parameter used by the real ViewThatFits.
+    init(in axis: Axis, @ViewBuilder content: () -> Content) { self.content = content() }
+    var body: some View { content }
+}
+typealias ViewThatFits = CompatViewThatFits
+
+// iOS 15 alert(_:isPresented:actions:message:) -> sheet-based shim (iOS 14).
+// The actions builder is placed in a sheet's VStack so TextFields keep working.
+struct CompatAlertSheet<Actions: View, Message: View>: View {
+    @Binding var isPresented: Bool
+    let title: Text
+    let actions: Actions
+    let message: Message?
+    init(isPresented: Binding<Bool>, title: Text, @ViewBuilder actions: () -> Actions, @ViewBuilder message: () -> Message) {
+        self._isPresented = isPresented
+        self.title = title
+        self.actions = actions()
+        self.message = message()
+    }
+    var body: some View {
+        VStack(spacing: 16) {
+            title.font(.headline)
+            if let message { message.font(.subheadline) }
+            actions
+            Button("common.cancel") { isPresented = false }
+        }
+        .padding()
+    }
+}
+
 

@@ -4,25 +4,25 @@ import EasyTierShared
 
 struct NetworkSettingsSheet: View {
     @Binding var settings: TunnelNetworkSettingsSnapshot?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var body: some View {
         NavigationStack {
             Form {
                 if let settings {
                     if let ipv4 = settings.ipv4 {
-                        Section("ipv4") {
+                        Section(header: Text("ipv4")) {
                             labeledLines("address", values: formatIPv4Addresses(Array(ipv4.subnets)))
                         }
                         if let routes = ipv4.includedRoutes, !routes.isEmpty {
-                            Section("ipv4_routes_included") {
+                            Section(header: Text("ipv4_routes_included")) {
                                 ForEach(Array(routes.enumerated()), id: \.offset) { _, route in
                                     Text(formatIPv4Route(route))
                                 }
                             }
                         }
                         if let routes = ipv4.excludedRoutes, !routes.isEmpty {
-                            Section("ipv4_routes_excluded") {
+                            Section(header: Text("ipv4_routes_excluded")) {
                                 ForEach(Array(routes.enumerated()), id: \.offset) { _, route in
                                     Text(formatIPv4Route(route))
                                 }
@@ -31,18 +31,18 @@ struct NetworkSettingsSheet: View {
                     }
 
                     if let ipv6 = settings.ipv6 {
-                        Section("ipv6") {
+                        Section(header: Text("ipv6")) {
                             labeledLines("address", values: formatIPv6Addresses(Array(ipv6.subnets)))
                         }
                         if let routes = ipv6.includedRoutes, !routes.isEmpty {
-                            Section("ipv6_routes_included") {
+                            Section(header: Text("ipv6_routes_included")) {
                                 ForEach(Array(routes.enumerated()), id: \.offset) { _, route in
                                     Text("\(route.address)/\(route.networkPrefixLength)")
                                 }
                             }
                         }
                         if let routes = ipv6.excludedRoutes, !routes.isEmpty {
-                            Section("ipv6_routes_excluded") {
+                            Section(header: Text("ipv6_routes_excluded")) {
                                 ForEach(Array(routes.enumerated()), id: \.offset) { _, route in
                                     Text("\(route.address)/\(route.networkPrefixLength)")
                                 }
@@ -51,7 +51,7 @@ struct NetworkSettingsSheet: View {
                     }
 
                     if let dns = settings.dns {
-                        Section("dns") {
+                        Section(header: Text("dns")) {
                             labeledLines("server", values: Array(dns.servers))
                             if let search = dns.searchDomains, !search.isEmpty {
                                 labeledLines("search_domains", values: Array(search))
@@ -63,7 +63,7 @@ struct NetworkSettingsSheet: View {
                     }
 
                     if let mtu = settings.mtu {
-                        Section("mtu") {
+                        Section(header: Text("mtu")) {
                             LabeledContent("mtu", value: String(mtu))
                         }
                     }
@@ -74,14 +74,12 @@ struct NetworkSettingsSheet: View {
                     }
                 }
             }
-            .textSelection(.enabled)
             .navigationTitle("network_settings")
             .adaptiveNavigationBarTitleInline()
-            .formStyle(.grouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -151,7 +149,7 @@ struct NetworkSettingsSheet: View {
 
 struct PeerConnDetailSheet: View {
     @Binding var status: NetworkStatus?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
     let peerRouteID: Int
 
     var pair: NetworkStatus.PeerRoutePair? {
@@ -166,7 +164,7 @@ struct PeerConnDetailSheet: View {
         NavigationStack {
             Form {
                 if let pair {
-                    Section("peer") {
+                    Section(header: Text("peer")) {
                         LabeledContent("hostname", value: pair.route.hostname)
                         LabeledContent("peer_id", value: String(pair.route.peerId))
                         if let ipv4 = pair.route.ipv4Addr {
@@ -206,7 +204,7 @@ struct PeerConnDetailSheet: View {
                     }
 
                     if !pair.route.proxyCIDRs.isEmpty {
-                        Section("proxy_cidrs") {
+                        Section(header: Text("proxy_cidrs")) {
                             ForEach(pair.route.proxyCIDRs, id: \.hashValue) {
                                 Text($0)
                             }
@@ -214,13 +212,13 @@ struct PeerConnDetailSheet: View {
                     }
 
                     if conns.isEmpty {
-                        Section("connections") {
+                        Section(header: Text("connections")) {
                             Text("no_connection_details_available")
                                 .compatFG(.secondary)
                         }
                     } else {
                         ForEach(conns, id: \.connId) { conn in
-                            Section("connection_\(conn.connId)") {
+                            Section(header: Text("connection_\(conn.connId)")) {
                                 LabeledContent("peer_id", value: String(conn.peerId))
                                 LabeledContent("role", value: conn.isClient ? "Client" : "Server")
                                 LabeledContent("loss_rate", value: percentString(conn.lossRate))
@@ -255,14 +253,12 @@ struct PeerConnDetailSheet: View {
                     }
                 }
             }
-            .textSelection(.enabled)
             .navigationTitle("peer_details")
             .adaptiveNavigationBarTitleInline()
-            .formStyle(.grouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -311,7 +307,7 @@ struct PeerConnDetailSheet: View {
 
 struct NodeInfoSheet: View {
     @Binding var status: NetworkStatus?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var nodeInfo: NetworkStatus.MyNodeInfo? {
         status?.myNodeInfo
@@ -321,7 +317,7 @@ struct NodeInfoSheet: View {
         NavigationStack {
             Form {
                 if let nodeInfo {
-                    Section("general") {
+                    Section(header: Text("general")) {
                         LabeledContent("hostname", value: nodeInfo.hostname)
                         if let peerID = nodeInfo.peerID {
                             LabeledContent("peer_id", value: String(peerID))
@@ -337,14 +333,12 @@ struct NodeInfoSheet: View {
                     }
                 }
             }
-            .textSelection(.enabled)
             .navigationTitle("node_information")
             .adaptiveNavigationBarTitleInline()
-            .formStyle(.grouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -356,7 +350,7 @@ struct NodeInfoSheet: View {
 
 struct IPInfoSheet: View {
     @Binding var status: NetworkStatus?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var nodeInfo: NetworkStatus.MyNodeInfo? {
         status?.myNodeInfo
@@ -367,14 +361,14 @@ struct IPInfoSheet: View {
             Form {
                 if let nodeInfo {
                     if let virtualIPv4 = nodeInfo.virtualIPv4 {
-                        Section("general") {
+                        Section(header: Text("general")) {
                             LabeledContent("virtual_ipv4", value: virtualIPv4.description)
                         }
                     }
                     
                     if let ips = nodeInfo.ips {
                         if ips.publicIPv4 != nil || ips.publicIPv6 != nil {
-                            Section("ip_information") {
+                            Section(header: Text("ip_information")) {
                                 if let publicIPv4 = ips.publicIPv4 {
                                     LabeledContent("public_ipv4", value: publicIPv4.description)
                                 }
@@ -384,14 +378,14 @@ struct IPInfoSheet: View {
                             }
                         }
                         if let v4s = ips.interfaceIPv4s, !v4s.isEmpty {
-                            Section("interface_ipv4s") {
+                            Section(header: Text("interface_ipv4s")) {
                                 ForEach(Array(Set(v4s)).map(\.description).sorted(), id: \.hashValue) { ip in
                                     Text(ip)
                                 }
                             }
                         }
                         if let v6s = ips.interfaceIPv6s, !v6s.isEmpty {
-                            Section("interface_ipv6s") {
+                            Section(header: Text("interface_ipv6s")) {
                                 ForEach(Array(Set(v6s)).map(\.description).sorted(), id: \.hashValue) { ip in
                                     Text(ip)
                                 }
@@ -400,7 +394,7 @@ struct IPInfoSheet: View {
                     }
                     
                     if let listeners = nodeInfo.listeners, !listeners.isEmpty {
-                        Section("listeners") {
+                        Section(header: Text("listeners")) {
                             ForEach(listeners, id: \.url) { listener in
                                 Text(listener.url)
                             }
@@ -412,14 +406,12 @@ struct IPInfoSheet: View {
                     }
                 }
             }
-            .textSelection(.enabled)
             .navigationTitle("ip_information")
             .adaptiveNavigationBarTitleInline()
-            .formStyle(.grouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }
@@ -431,7 +423,7 @@ struct IPInfoSheet: View {
 
 struct StunInfoSheet: View {
     @Binding var status: NetworkStatus?
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) private var presentationMode
 
     var stunInfo: NetworkStatus.STUNInfo? {
         status?.myNodeInfo?.stunInfo
@@ -441,7 +433,7 @@ struct StunInfoSheet: View {
         NavigationStack {
             Form {
                 if let stunInfo {
-                    Section("nat_types") {
+                    Section(header: Text("nat_types")) {
                         LabeledContent("udp_nat_type") {
                             Text(stunInfo.udpNATType.description)
                         }
@@ -450,7 +442,7 @@ struct StunInfoSheet: View {
                         }
                     }
                     
-                    Section("details") {
+                    Section(header: Text("details")) {
                         LabeledContent("last_update", value: formatDate(stunInfo.lastUpdateTime))
                         if let minPort = stunInfo.minPort {
                             LabeledContent("min_port", value: String(minPort))
@@ -461,7 +453,7 @@ struct StunInfoSheet: View {
                     }
                     
                     if !stunInfo.publicIPs.isEmpty {
-                        Section("public_ips") {
+                        Section(header: Text("public_ips")) {
                             ForEach(stunInfo.publicIPs, id: \.self) { ip in
                                 Text(ip)
                             }
@@ -476,12 +468,10 @@ struct StunInfoSheet: View {
             }
             .navigationTitle("stun_information")
             .adaptiveNavigationBarTitleInline()
-            .textSelection(.enabled)
-            .formStyle(.grouped)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     } label: {
                         Image(systemName: "xmark")
                     }

@@ -23,7 +23,6 @@ struct WebManagementEditView: View {
                     TextField(
                         "tcp://et-web.console.easytier.net:22020/your_token",
                         text: $server,
-                        prompt: Text("tcp://localhost:22020/your_token"),
                         axis: .vertical
                     )
                     .labelsHidden()
@@ -35,7 +34,6 @@ struct WebManagementEditView: View {
                     TextField(
                         "common_text.default",
                         text: $hostname,
-                        prompt: Text("common_text.default")
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
@@ -47,7 +45,7 @@ struct WebManagementEditView: View {
             } footer: {
                 Text("web_management.secure_mode_help")
             }
-            Section("web_management.machine_id") {
+            Section(header: Text("web_management.machine_id")) {
                 LabeledContent {
                     Button(action: copyMachineID) {
                         Image(systemName: "doc.on.doc")
@@ -55,17 +53,15 @@ struct WebManagementEditView: View {
                     .help("web_management.machine_id.copy")
                 } label: {
                     Text(machineID).font(.system(.caption, design: .monospaced))
-                        .textSelection(.enabled)
                 }
-                Button("web_management.machine_id.reset", role: .destructive) {
+                Button("web_management.machine_id.reset") {
                     showResetMachineIDAlert = true
                 }
             }
         }
-        .formStyle(.grouped)
         .alert("web_management.machine_id.reset_confirm_title", isPresented: $showResetMachineIDAlert) {
-            Button("common.cancel", role: .cancel) {}
-            Button("reset", role: .destructive) {
+            Button("common.cancel") {}
+            Button("reset") {
                 guard isEnabled else { return }
                 machineID = UUID().uuidString.lowercased()
                 onSave()

@@ -104,12 +104,12 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
     
     var singleColumn: some View {
         Form {
-            Section("device.status") {
+            Section(header: Text("device.status")) {
                 localStatus
             }
 
             if let error = status?.errorMsg {
-                Section("common.error") {
+                Section(header: Text("common.error")) {
                     HStack {
                         Image(systemName: "exclamationmark.triangle.fill")
                         Text(error)
@@ -137,23 +137,22 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                 }
             }
 #if os(iOS)
-            Section("common.info") { info }
+            Section(header: Text("common.info")) { info }
 #else
             info
 #endif
         }
-        .formStyle(.grouped)
     }
     
     var doubleComlum: some View {
         HStack(spacing: 0) {
             Form {
-                Section("device.status") {
+                Section(header: Text("device.status")) {
                     localStatus
                 }
 
                 if let error = status?.errorMsg {
-                    Section("common.error") {
+                    Section(header: Text("common.error")) {
                         HStack {
                             Image(systemName: "exclamationmark.triangle.fill")
                             Text(error)
@@ -162,19 +161,17 @@ struct StatusView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
                 }
                 
-                Section("peer_info") {
+                Section(header: Text("peer_info")) {
                     peerInfo
                 }
             }
-            .formStyle(.grouped)
             .columnGutter(.trailing)
             .frame(minWidth: columnMinWidth, maxWidth: columnMaxWidth)
             Form {
-                Section("event_log") {
+                Section(header: Text("event_log")) {
                     TimelineLogPanel(events: status?.events ?? [])
                 }
             }
-            .formStyle(.grouped)
             .columnGutter(.leading)
             .frame(minWidth: columnMinWidth)
         }
@@ -306,7 +303,6 @@ struct PeerRowView<RightView>: View where RightView: View {
 #endif
                 Image(systemName: iconSystemName)
                     .compatFG(color)
-                    .symbolRenderingMode(.monochrome)
 
             }.padding(.trailing, 8)
 
@@ -457,7 +453,7 @@ struct RemotePeerRowView: View {
                         Text("\(String(format: "%.1f", latency / 1000.0)) ms")
                             .font(.callout)
                             .fontWeight(.semibold)
-                            .monospacedDigit()
+                            .compatMonospacedDigit()
                     }
                     .compatFG(latencyColor(latency))
                 }
@@ -556,7 +552,6 @@ struct TrafficItem: View {
             case .Tx:
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down")
-                        .symbolRenderingMode(.palette)
                         .compatFG(.orange, .orange.opacity(0.3))
                     Text("upload")
                         .compatFG(.orange)
@@ -565,7 +560,6 @@ struct TrafficItem: View {
             case .Rx:
                 HStack(spacing: 4) {
                     Image(systemName: "arrow.up.arrow.down")
-                        .symbolRenderingMode(.palette)
                         .compatFG(.blue.opacity(0.3), .blue)
                     Text("download")
                         .compatFG(.blue)
