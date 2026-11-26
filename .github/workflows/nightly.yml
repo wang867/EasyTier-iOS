@@ -153,10 +153,12 @@ jobs:
           BUNDLE="${PACKAGE_PATH}/Payload/EasyTier.app"
           mkdir -p "${BUNDLE}/Frameworks"
 
-          # Diagnose + bundle the Swift concurrency runtime for iOS 14.
-          echo "=== swift dylibs on runner ===" >&2
-          find /Applications -name 'libswift*.dylib' -type f 2>/dev/null | head -n 60 >&2
-          CONCURRENCY="$(find /Applications -name 'libswift_Concurrency.dylib' -type f 2>/dev/null | head -n 1)"
+          # Bundle the Swift concurrency runtime for iOS 14.
+          # Prefer the iphoneos variant (device) over simulator variants.
+          CONCURRENCY="$(find /Applications -path '*iphoneos*' -name 'libswift_Concurrency.dylib' -type f 2>/dev/null | head -n 1 || true)"
+          if [ -z "${CONCURRENCY}" ]; then
+            CONCURRENCY="$(find /Applications -name 'libswift_Concurrency.dylib' -type f 2>/dev/null | head -n 1 || true)"
+          fi
           if [ -n "${CONCURRENCY}" ]; then
             echo "Bundling concurrency runtime from: ${CONCURRENCY}" >&2
             cp "${CONCURRENCY}" "${BUNDLE}/Frameworks/"
