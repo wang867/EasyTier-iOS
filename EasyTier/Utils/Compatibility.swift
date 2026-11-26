@@ -43,7 +43,7 @@ extension View {
 
     @ViewBuilder
     func adaptiveToolbarLabelStyle(padding: CGFloat) -> some View {
-        self.labelStyle(.title).padding(padding)
+        self.labelStyle(.titleOnly).padding(padding)
     }
 }
 
@@ -171,6 +171,8 @@ extension Color {
     static var compatSecondary: Color { Color.gray }
 }
 
+enum CompatVisibility { case automatic, visible, hidden }
+
 // HorizontalEdge (iOS 15+) -> simple enum
 enum CompatHorizontalEdge {
     case leading
@@ -190,13 +192,11 @@ typealias ViewThatFits = CompatViewThatFits
 
 // NavigationLink(_:value:) (iOS 16+) -> plain label link without value-based navigation.
 // On iOS 14 these secondary navigation entries fall back to a no-op link.
-extension NavigationLink where Label == Text {
-    init(_ titleKey: LocalizedStringKey, value: some Hashable) {
+extension NavigationLink {
+    init<V: Hashable>(_ titleKey: LocalizedStringKey, value: V) where Label == Text {
         self.init(destination: EmptyView(), label: { Text(titleKey) })
     }
-}
-extension NavigationLink where Label == Text {
-    init(_ title: String, value: some Hashable) {
+    init<V: Hashable>(_ title: String, value: V) where Label == Text {
         self.init(destination: EmptyView(), label: { Text(title) })
     }
 }
@@ -237,12 +237,23 @@ extension View {
         }
     }
 
+    // alert without message
+    func compatAlert<Actions: View>(
+        _ titleKey: LocalizedStringKey,
+        isPresented: Binding<Bool>,
+        @ViewBuilder actions: @escaping () -> Actions
+    ) -> some View {
+        self.sheet(isPresented: isPresented) {
+            CompatAlertSheet(isPresented: isPresented, title: Text(titleKey), actions: actions, message: EmptyView())
+        }
+    }
+
     // iOS 15 confirmationDialog -> iOS 14 actionSheet fallback is not ViewBuilder-capable;
     // use a sheet with the actions instead.
     func compatConfirmationDialog<Actions: View, Message: View>(
         _ titleKey: LocalizedStringKey,
         isPresented: Binding<Bool>,
-        titleVisibility: Visibility = .automatic,
+        titleVisibility: CompatVisibility = .automatic,
         @ViewBuilder actions: @escaping () -> Actions,
         @ViewBuilder message: @escaping () -> Message
     ) -> some View {

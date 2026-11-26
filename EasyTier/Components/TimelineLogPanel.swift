@@ -1,12 +1,6 @@
 import SwiftUI
 
 struct TimelineLogPanel: View {
-    private static let shortDateFormatter: DateFormatter = {
-        let f = DateFormatter()
-        f.dateFormat = "MMM d"
-        return f
-    }()
-
     let events: [String]
     
     var timelineEntries: [TimelineEntry] {
@@ -30,6 +24,13 @@ struct TimelineLogPanel: View {
 }
 
 struct TimelineRow: View {
+    private static let shortDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return f
+    }()
+
+
     let entry: TimelineEntry
     let isLast: Bool
     
