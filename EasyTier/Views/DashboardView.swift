@@ -339,7 +339,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                             } label: {
                                 Label("rename", systemImage: "pencil")
                             }
-                            Button(role: .destructive) {
+                            Button {
                                 Task { @MainActor in
                                     do {
                                         if selectedSession.session?.name == item.id {
@@ -353,10 +353,9 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                                 }
                             } label: {
                                 Label("delete", systemImage: "trash")
-                                    .tint(.red)
                             }
                         }
-                        .swipeActions(edge: .leading) {
+                        .compatSwipeActions(edge: .leading) {
                             Button {
                                 editingProfileName = item.id
                                 editConfigNameInput = item.id
@@ -364,7 +363,6 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                             } label: {
                                 Label("rename", systemImage: "pencil")
                             }
-                            .tint(.orange)
                         }
                     }
                     .onDelete { indexSet in
@@ -400,7 +398,6 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
 #if os(macOS)
                     .buttonStyle(.borderless)
-                    .tint(.accentColor)
 #endif
                     Button {
                         presentEditInText()
@@ -416,7 +413,6 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
 #if os(macOS)
                     .buttonStyle(.borderless)
-                    .tint(.accentColor)
 #endif
                     Button {
                         showImportPicker = true
@@ -432,7 +428,6 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
 #if os(macOS)
                     .buttonStyle(.borderless)
-                    .tint(.accentColor)
 #endif
                     Button {
                         exportSelectedProfile()
@@ -444,7 +439,6 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                     }
 #if os(macOS)
                     .buttonStyle(.borderless)
-                    .tint(.accentColor)
 #endif
                 }
             }
@@ -461,13 +455,13 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
                 isVisible: !ProfileStore.loadIndexOrEmpty().isEmpty,
                 placement: .cancellationAction
             )
-            .alert("add_new_network", isPresented: $showNewNetworkAlert) {
+            .compatAlert("add_new_network", isPresented: $showNewNetworkAlert) {
                 TextField("config_name", text: $newNetworkInput)
                     .adaptiveNoTextInputAutocapitalization()
                 Button("common.cancel") {}
                 Button("network.create", action: createProfile)
             }
-            .alert("edit_config_name", isPresented: $showEditConfigNameAlert) {
+            .compatAlert("edit_config_name", isPresented: $showEditConfigNameAlert) {
                 TextField("config_name", text: $editConfigNameInput)
                     .adaptiveNoTextInputAutocapitalization()
                 Button("common.cancel") {}
@@ -649,7 +643,7 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             dashboardLogger.error("received error: \(String(describing: msg))")
             return Alert(title: Text("common.error"), message: Text(msg.text))
         }
-        .alert("icloud_conflict_title", isPresented: $showConflictAlert) {
+        .compatAlert("icloud_conflict_title", isPresented: $showConflictAlert) {
             Button("icloud_conflict_use_local") {
                 resolveConflict(useLocal: true)
             }

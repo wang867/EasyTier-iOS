@@ -231,12 +231,10 @@ struct NetworkEditView: View {
                                 get: { profile.secureModeLocalPrivateKey },
                                 set: { profile.updateSecureModePrivateKey($0) }
                             ),
-                            axis: .vertical
                         )
                         .labelsHidden()
                         .font(.body.compatMonospaced())
                         .adaptiveNoTextInputAutocapitalization()
-                        .autocorrectionDisabled()
                     }
                     LabeledContent("local_public_key") {
                         Group {
@@ -634,13 +632,11 @@ struct PeerPublicKeyEditor: View {
                     TextField(
                         "peer_public_key",
                         text: $publicKey,
-                        axis: .vertical
                     )
                     .labelsHidden()
                     .font(.body.compatMonospaced())
-                    .lineLimit(2...4)
+                    .lineLimit(4)
                     .adaptiveNoTextInputAutocapitalization()
-                    .autocorrectionDisabled()
 
                     if let validationError {
                         Label(validationError, systemImage: "exclamationmark.triangle.fill")

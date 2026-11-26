@@ -75,7 +75,7 @@ struct ACLSettingsView: View {
             }
         }
         .navigationTitle("acl.title")
-        .confirmationDialog(
+        .compatConfirmationDialog(
             "acl.disable_confirmation",
             isPresented: $showDisableConfirmation,
             titleVisibility: .visible
@@ -99,7 +99,6 @@ struct ACLSettingsView: View {
         addChainMenuContent
             .menuStyle(.borderlessButton)
             .menuIndicator(.hidden)
-            .tint(.accentColor)
 #endif
     }
 
@@ -201,8 +200,8 @@ private struct ACLChainEditorView: View {
             }
 
             Section(header: Text("acl.chain_description")) {
-                TextField("acl.chain_description_placeholder", text: $chain.description, axis: .vertical)
-                    .lineLimit(2...4)
+                TextField("acl.chain_description_placeholder", text: $chain.description)
+                    .lineLimit(4)
             }
 
             Section {
@@ -213,7 +212,7 @@ private struct ACLChainEditorView: View {
                         ACLRuleRow(rule: rule)
                     }
                     .contextMenu {
-                        Button(role: .destructive) {
+                        Button {
                             removeRule(id: rule.id)
                         } label: {
                             Label("delete", systemImage: "trash")
@@ -342,13 +341,13 @@ private struct ACLRuleEditorView: View {
                 LabeledContent("acl.priority") {
                     Text("\(rule.priority)")
                         .compatFG(.secondary)
-                        .compatMonospacedDigit()
+                        
                 }
             }
 
             Section(header: Text("acl.rule_description")) {
-                TextField("acl.rule_description_placeholder", text: $rule.description, axis: .vertical)
-                    .lineLimit(2...4)
+                TextField("acl.rule_description_placeholder", text: $rule.description)
+                    .lineLimit(4)
             }
 
             ACLStringListEditor(
@@ -440,8 +439,7 @@ private struct ACLStringListEditor: View {
                         .labelsHidden()
                         .font(.body.compatMonospaced())
                         .adaptiveNoTextInputAutocapitalization()
-                        .autocorrectionDisabled()
-                    Button(role: .destructive) {
+                    Button {
                         guard values.indices.contains(index) else { return }
                         values.remove(at: index)
                     } label: {
@@ -703,7 +701,6 @@ private struct ACLGroupIdentityEditorView: View {
                         .labelsHidden()
                         .multilineTextAlignment(.trailing)
                         .adaptiveNoTextInputAutocapitalization()
-                        .autocorrectionDisabled()
                 }
                 LabeledContent("acl.group_secret") {
                     SecureField(

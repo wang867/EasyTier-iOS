@@ -383,7 +383,7 @@ struct LocalPeerRowView: View {
                 .compatFG(.secondary)
                 .padding(.horizontal, 6)
                 .padding(.vertical, 2)
-                .background(.secondary.opacity(0.1))
+                .background(Color.secondary.opacity(0.1))
                 .clipShape(Capsule())
         }
     }
@@ -453,7 +453,7 @@ struct RemotePeerRowView: View {
                         Text("\(String(format: "%.1f", latency / 1000.0)) ms")
                             .font(.callout)
                             .fontWeight(.semibold)
-                            .compatMonospacedDigit()
+                            
                     }
                     .compatFG(latencyColor(latency))
                 }

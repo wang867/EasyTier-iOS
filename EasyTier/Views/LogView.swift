@@ -56,7 +56,7 @@ struct LogView<Manager: NetworkExtensionManagerProtocol>: View {
                         }
                     }) {
                         Image(systemName: "trash")
-                    }.tint(.red)
+                    }
                 }
                 ToolbarItem(placement: ToolbarTrailing) {
                     Button(action: {

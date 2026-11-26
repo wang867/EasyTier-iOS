@@ -173,7 +173,6 @@ struct MenuBarView<Manager: NetworkExtensionManagerProtocol>: View {
                 .frame(maxWidth: .infinity)
             }
             .buttonStyle(.automatic)
-            .tint(isConnected ? .red : .accentColor)
             .disabled(manager.isLoading || isPending)
 
             Button {

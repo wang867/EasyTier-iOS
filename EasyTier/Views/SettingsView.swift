@@ -208,7 +208,6 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
                 }
 #if os(macOS)
                 .buttonStyle(.borderless)
-                .tint(.accentColor)
 #endif
                 .disabled(isExporting || manager.status == .disconnected)
             } header: {
@@ -236,7 +235,6 @@ struct SettingsView<Manager: NetworkExtensionManagerProtocol>: View {
             }
 #if os(macOS)
             .buttonStyle(.borderless)
-            .tint(.red)
 #endif
 
             Section(header: Text("about.title")) {

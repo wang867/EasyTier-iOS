@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct TimelineLogPanel: View {
+    private static let shortDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return f
+    }()
+
     let events: [String]
     
     var timelineEntries: [TimelineEntry] {
@@ -37,7 +43,7 @@ struct TimelineRow: View {
                         .fontWeight(.bold)
                         .compatFG(.primary)
                     
-                    Text(date.formatted(.dateTime.month().day())) // e.g., Jan 4
+                    Text(Self.shortDateFormatter.string(from: date)) // e.g., Jan 4
                         .font(.caption2)
                         .compatFG(.secondary)
                 } else {

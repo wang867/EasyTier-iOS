@@ -23,12 +23,10 @@ struct WebManagementEditView: View {
                     TextField(
                         "tcp://et-web.console.easytier.net:22020/your_token",
                         text: $server,
-                        axis: .vertical
                     )
                     .labelsHidden()
                     .multilineTextAlignment(.trailing)
                     .adaptiveNoTextInputAutocapitalization()
-                    .autocorrectionDisabled()
                 }
                 LabeledContent("hostname") {
                     TextField(
@@ -59,7 +57,7 @@ struct WebManagementEditView: View {
                 }
             }
         }
-        .alert("web_management.machine_id.reset_confirm_title", isPresented: $showResetMachineIDAlert) {
+        .compatAlert("web_management.machine_id.reset_confirm_title", isPresented: $showResetMachineIDAlert) {
             Button("common.cancel") {}
             Button("reset") {
                 guard isEnabled else { return }

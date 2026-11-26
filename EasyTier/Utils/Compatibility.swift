@@ -35,7 +35,7 @@ extension View {
     
     func adaptiveNoTextInputAutocapitalization() -> some View {
 #if os(iOS)
-        return self.textInputAutocapitalization(.never)
+        return self
 #else
         return self
 #endif
@@ -43,7 +43,7 @@ extension View {
 
     @ViewBuilder
     func adaptiveToolbarLabelStyle(padding: CGFloat) -> some View {
-        self.labelStyle(.titleAndIcon).padding(padding)
+        self.labelStyle(.title).padding(padding)
     }
 }
 
@@ -148,6 +148,11 @@ extension View {
     func compatLineLimit(_ limit: Int, reservesSpace: Bool = false) -> some View {
         self.lineLimit(limit)
     }
+
+    // swipeActions (iOS 15+) -> no-op on iOS 14 (actions via other affordances)
+    func compatSwipeActions<Content: View>(edge: Edge = .trailing, allowsFullSwipe: Bool = true, @ViewBuilder content: () -> Content) -> some View {
+        self
+    }
 }
 
 // Font.compatMonospaced() (iOS 15+) -> system design (iOS 13+)
@@ -183,13 +188,25 @@ struct CompatViewThatFits<Content: View>: View {
 }
 typealias ViewThatFits = CompatViewThatFits
 
+// NavigationLink(_:value:) (iOS 16+) -> plain label link without value-based navigation.
+// On iOS 14 these secondary navigation entries fall back to a no-op link.
+extension NavigationLink where Label == Text {
+    init(_ titleKey: LocalizedStringKey, value: some Hashable) {
+        self.init(destination: EmptyView(), label: { Text(titleKey) })
+    }
+}
+extension NavigationLink where Label == Text {
+    init(_ title: String, value: some Hashable) {
+        self.init(destination: EmptyView(), label: { Text(title) })
+    }
+}
+
 // iOS 15 alert(_:isPresented:actions:message:) -> sheet-based shim (iOS 14).
-// The actions builder is placed in a sheet's VStack so TextFields keep working.
 struct CompatAlertSheet<Actions: View, Message: View>: View {
     @Binding var isPresented: Bool
     let title: Text
     let actions: Actions
-    let message: Message?
+    let message: Message
     init(isPresented: Binding<Bool>, title: Text, @ViewBuilder actions: () -> Actions, @ViewBuilder message: () -> Message) {
         self._isPresented = isPresented
         self.title = title
@@ -199,11 +216,39 @@ struct CompatAlertSheet<Actions: View, Message: View>: View {
     var body: some View {
         VStack(spacing: 16) {
             title.font(.headline)
-            if let message { message.font(.subheadline) }
+            message.font(.subheadline)
             actions
             Button("common.cancel") { isPresented = false }
         }
         .padding()
+    }
+}
+
+extension View {
+    // iOS 15 alert with actions/message builders -> iOS 14 sheet fallback.
+    func compatAlert<Actions: View, Message: View>(
+        _ titleKey: LocalizedStringKey,
+        isPresented: Binding<Bool>,
+        @ViewBuilder actions: @escaping () -> Actions,
+        @ViewBuilder message: @escaping () -> Message
+    ) -> some View {
+        self.sheet(isPresented: isPresented) {
+            CompatAlertSheet(isPresented: isPresented, title: Text(titleKey), actions: actions, message: message)
+        }
+    }
+
+    // iOS 15 confirmationDialog -> iOS 14 actionSheet fallback is not ViewBuilder-capable;
+    // use a sheet with the actions instead.
+    func compatConfirmationDialog<Actions: View, Message: View>(
+        _ titleKey: LocalizedStringKey,
+        isPresented: Binding<Bool>,
+        titleVisibility: Visibility = .automatic,
+        @ViewBuilder actions: @escaping () -> Actions,
+        @ViewBuilder message: @escaping () -> Message
+    ) -> some View {
+        self.sheet(isPresented: isPresented) {
+            CompatAlertSheet(isPresented: isPresented, title: Text(titleKey), actions: actions, message: message)
+        }
     }
 }
 
