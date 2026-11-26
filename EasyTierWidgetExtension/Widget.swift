@@ -136,10 +136,6 @@ struct VPNStatusWidgetView: View {
                         .font(.caption2)
                 }
                 .lineLimit(1)
-                .controlSize(family == .systemSmall ? .small : .regular)
-                .tint(entry.isConnected ? Color.red : Color.accentColor)
-                .buttonStyle(.automatic)
-                .widgetAccentable()
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
