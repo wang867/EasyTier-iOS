@@ -192,12 +192,12 @@ typealias ViewThatFits = CompatViewThatFits
 
 // NavigationLink(_:value:) (iOS 16+) -> plain label link without value-based navigation.
 // On iOS 14 these secondary navigation entries fall back to a no-op link.
-extension NavigationLink {
-    init<V: Hashable>(_ titleKey: LocalizedStringKey, value: V) where Label == Text {
-        self.init(destination: EmptyView(), label: { Text(titleKey) })
+extension NavigationLink where Destination == EmptyView, Label == Text {
+    init<V: Hashable>(_ titleKey: LocalizedStringKey, value: V) {
+        self.init(destination: EmptyView()) { Text(titleKey) }
     }
-    init<V: Hashable>(_ title: String, value: V) where Label == Text {
-        self.init(destination: EmptyView(), label: { Text(title) })
+    init<V: Hashable>(_ title: String, value: V) {
+        self.init(destination: EmptyView()) { Text(title) }
     }
 }
 
@@ -244,7 +244,7 @@ extension View {
         @ViewBuilder actions: @escaping () -> Actions
     ) -> some View {
         self.sheet(isPresented: isPresented) {
-            CompatAlertSheet(isPresented: isPresented, title: Text(titleKey), actions: actions, message: EmptyView())
+            CompatAlertSheet(isPresented: isPresented, title: Text(titleKey), actions: actions, message: { EmptyView() })
         }
     }
 
