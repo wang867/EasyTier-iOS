@@ -10,8 +10,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: nightly
-  cancel-in-progress: true
+  group: nightly-${{ github.run_id }}
+  cancel-in-progress: false
 
 env:
   SCHEME: EasyTier
