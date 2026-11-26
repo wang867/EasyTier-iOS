@@ -10,8 +10,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: ios14-build-${{ github.run_id }}
-  cancel-in-progress: false
+  group: nightly
+  cancel-in-progress: true
 
 env:
   SCHEME: EasyTier
@@ -22,7 +22,7 @@ env:
 jobs:
   build-and-release:
     name: Build and publish TrollStore IPA (iOS 14)
-    runs-on: macos-latest
+    runs-on: macos-15
     timeout-minutes: 90
 
     steps:
