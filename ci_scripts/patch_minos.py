@@ -70,9 +70,9 @@ def main():
                 except Exception:
                     pass
             else:
-                d, n = patch_macho(bytes(data), target)
+                d, n = patch_macho(data, target)  # data is bytearray (mutable)
                 if n:
-                    data = bytearray(d)
+                    data = d
                     nmacho += n
             zout.writestr(info, bytes(data))
     shutil.move(tmp, dst)
