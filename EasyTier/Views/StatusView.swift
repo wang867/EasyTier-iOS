@@ -609,21 +609,14 @@ struct StatItem: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            if false {
-                Label(label, systemImage: icon)
+            HStack(spacing: 4) {
+                Image(systemName: icon)
                     .font(.caption)
-                    .compatFG(.secondary)
-                    .labelIconToTitleSpacing(2)
-            } else {
-                HStack(spacing: 4) {
-                    Image(systemName: icon)
-                        .font(.caption)
-                    Text(label)
-                        .font(.caption)
-                }
-                .padding(.leading, 4)
-                .compatFG(.secondary)
+                Text(label)
+                    .font(.caption)
             }
+            .padding(.leading, 4)
+            .compatFG(.secondary)
             Text(value)
                 .font(.subheadline)
                 .fontWeight(.medium)

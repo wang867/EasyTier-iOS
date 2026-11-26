@@ -550,7 +550,7 @@ private struct ACLGroupEditorView: View {
                                 Spacer()
                                 Image(systemName: "chevron.right")
                                     .font(.caption.bold())
-                                    .compatFG(.tertiary)
+                                    .compatFG(.secondary)
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .contentShape(Rectangle())

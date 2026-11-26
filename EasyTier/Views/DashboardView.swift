@@ -464,13 +464,8 @@ struct DashboardView<Manager: NetworkExtensionManagerProtocol>: View {
             .alert("add_new_network", isPresented: $showNewNetworkAlert) {
                 TextField("config_name", text: $newNetworkInput)
                     .adaptiveNoTextInputAutocapitalization()
-                if false {
-                    Button(role: .cancel) {}
-                    Button("network.create", role: .confirm, action: createProfile)
-                } else {
-                    Button("common.cancel") {}
-                    Button("network.create", action: createProfile)
-                }
+                Button("common.cancel") {}
+                Button("network.create", action: createProfile)
             }
             .alert("edit_config_name", isPresented: $showEditConfigNameAlert) {
                 TextField("config_name", text: $editConfigNameInput)
