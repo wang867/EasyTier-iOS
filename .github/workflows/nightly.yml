@@ -150,6 +150,35 @@ jobs:
           mkdir -p "${PACKAGE_PATH}/Payload" "${EXPORT_PATH}"
           cp -R "${APP_PATH}" "${PACKAGE_PATH}/Payload/EasyTier.app"
 
+          BUNDLE="${PACKAGE_PATH}/Payload/EasyTier.app"
+          mkdir -p "${BUNDLE}/Frameworks"
+
+          # iOS 14 lacks /usr/lib/swift/libswift_Concurrency.dylib.
+          # Bundle the Swift concurrency runtime from the Xcode toolchain and
+          # rewrite the load commands to @rpath so dyld can find it.
+          SWIFTDIR="$(dirname "$(xcrun --sdk iphoneos --find swiftc)")/../lib/swift/iphoneos"
+          CONCURRENCY="$(find "$SWIFTDIR" /Applications/Xcode*.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos -name 'libswift_Concurrency.dylib' 2>/dev/null | head -n 1)"
+          if [ -z "${CONCURRENCY}" ]; then
+            echo "ERROR: libswift_Concurrency.dylib not found" >&2
+            exit 1
+          fi
+          cp "${CONCURRENCY}" "${BUNDLE}/Frameworks/"
+          chmod 644 "${BUNDLE}/Frameworks/libswift_Concurrency.dylib"
+
+          BINARIES=(
+            "${BUNDLE}/EasyTier"
+            "${BUNDLE}/PlugIns/EasyTierNetworkExtension.appex/EasyTierNetworkExtension"
+            "${BUNDLE}/PlugIns/EasyTierWidgetExtension.appex/EasyTierWidgetExtension"
+          )
+          for bin in "${BINARIES[@]}"; do
+            [ -f "${bin}" ] || continue
+            install_name_tool -change \
+              /usr/lib/swift/libswift_Concurrency.dylib \
+              @rpath/libswift_Concurrency.dylib "${bin}" 2>/dev/null || true
+            install_name_tool -add_rpath @executable_path/Frameworks "${bin}" 2>/dev/null || true
+            install_name_tool -add_rpath @executable_path/../Frameworks "${bin}" 2>/dev/null || true
+          done
+
           (
             cd "${PACKAGE_PATH}"
             /usr/bin/zip -qry "${EXPORT_PATH}/${IPA_NAME}.unpatched" Payload
