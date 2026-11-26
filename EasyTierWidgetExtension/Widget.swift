@@ -131,16 +131,9 @@ struct VPNStatusWidgetView: View {
             HStack {
                 Spacer(minLength: 0)
                 Group {
-                    let text: LocalizedStringKey = entry.isConnected ? "vpn_disconnect" : "vpn_connect"
-                    if #available(iOS 17.0, macOS 14.0, *) {
-                        Button(text, intent: ToggleVPNConnectionIntent())
-                    } else {
-                        Button(text) {
-                            Task {
-                                _ = try? await ToggleVPNConnectionIntent().perform()
-                            }
-                        }
-                    }
+                    // iOS 14 build: App Intents removed; toggle is unavailable in widget.
+                    Text(entry.isConnected ? "vpn_connected" : "vpn_disconnected")
+                        .font(.caption2)
                 }
                 .lineLimit(1)
                 .controlSize(family == .systemSmall ? .small : .regular)
