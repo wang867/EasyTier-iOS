@@ -129,9 +129,11 @@ extension View {
         background(content())
     }
 
-    // animation(_:value:) (iOS 15+) -> animation(_:)
+    // animation(_:value:) (iOS 15+) -> no-op on iOS 14.
+    // Applying an implicit animation to toolbar buttons is a known
+    // AttributeGraph crash source on iOS 14; visual polish is not worth it.
     func compatAnimation<V: Equatable>(_ animation: Animation, value: V) -> some View {
-        self.animation(animation)
+        self
     }
 
     // task(id:) (iOS 15+) -> plain task (runs on appear)
@@ -180,15 +182,16 @@ enum CompatHorizontalEdge {
 }
 typealias HorizontalEdge = CompatHorizontalEdge
 
-// ViewThatFits (iOS 15+) -> simple fallback (first view)
-struct CompatViewThatFits<Content: View>: View {
-    let content: Content
-    init(@ViewBuilder content: () -> Content) { self.content = content() }
-    // Accept and ignore the axis parameter used by the real ViewThatFits.
-    init(in axis: Axis, @ViewBuilder content: () -> Content) { self.content = content() }
-    var body: some View { content }
+// ViewThatFits (iOS 15+) -> show only the first candidate view.
+// A naive shim returning the whole TupleView makes SwiftUI lay out every
+// branch at once, which crashes AttributeGraph on iOS 14. Keep only the first.
+struct ViewThatFits<First: View, Second: View>: View {
+    let first: First
+    init(in axis: Axis, @ViewBuilder content: () -> TupleView<(First, Second)>) {
+        self.first = content().value.0
+    }
+    var body: some View { first }
 }
-typealias ViewThatFits = CompatViewThatFits
 
 // NavigationLink(_:value:) (iOS 16+) -> plain label link without value-based navigation.
 // On iOS 14 these secondary navigation entries fall back to a no-op link.
