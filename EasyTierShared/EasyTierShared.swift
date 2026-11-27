@@ -7,7 +7,7 @@ public let ICLOUD_CONTAINER_ID: String = "iCloud.cn.easytier"
 public let LOG_FILENAME: String = "easytier.log"
 
 // Diagnostic hook injected by the app; used to trace VPN connection steps.
-public var diagLog: ((String) -> Void)?
+public nonisolated(unsafe) var diagLog: ((String) -> Void)?
 
 public enum LogLevel: String, Codable, CaseIterable {
     case trace = "trace"
