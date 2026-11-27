@@ -14,6 +14,20 @@ private let easyTierSignalHandler: @convention(c) (Int32) -> Void = { s in
     _ = sigaction(s, nil, nil)
 }
 
+// Global exception handler (C function pointer, no captured context).
+private let easyTierExceptionHandler: @convention(c) (NSException) -> Void = { exception in
+    let reason = exception.reason ?? "unknown"
+    let stack = exception.callStackSymbols.prefix(20).joined(separator: "\n")
+    let line = "[\(ISO8601DateFormatter().string(from: Date()))] EXCEPTION \(exception.name.rawValue): \(reason)\n\(stack)\n"
+    if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
+        .appendingPathComponent("crashlog.txt"),
+       let handle = try? FileHandle(forWritingTo: url) {
+        handle.seekToEndOfFile()
+        handle.write(Data(line.utf8))
+        try? handle.close()
+    }
+}
+
 // Captures fatal signals/exceptions into Documents/crashlog.txt so crashes can
 // be inspected even when iOS produces no analytics entry (TrollStore apps).
 enum CrashCapture {
@@ -24,11 +38,7 @@ enum CrashCapture {
 
     static func install() {
         log("app launched build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "?")")
-        NSSetUncaughtExceptionHandler { exception in
-            let reason = exception.reason ?? "unknown"
-            let stack = exception.callStackSymbols.prefix(20).joined(separator: "\n")
-            log("EXCEPTION \(exception.name.rawValue): \(reason)\n\(stack)")
-        }
+        NSSetUncaughtExceptionHandler(easyTierExceptionHandler)
         for sig in [SIGABRT, SIGILL, SIGSEGV, SIGFPE, SIGBUS, SIGTRAP] {
             signal(sig, easyTierSignalHandler)
         }
