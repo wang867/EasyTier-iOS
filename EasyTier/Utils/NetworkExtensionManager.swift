@@ -234,6 +234,7 @@ class NetworkExtensionManager: NetworkExtensionManagerProtocol {
     }
     
     func connect() async throws {
+        CrashCapture.log("connect() status=\(status.rawValue) isLoading=\(isLoading) manager=\(manager == nil)")
         guard ![.connecting, .connected, .disconnecting, .reasserting].contains(status) else {
             Self.logger.warning("connect() failed: in \(String(describing: self.status)) status")
             return
@@ -259,12 +260,15 @@ class NetworkExtensionManager: NetworkExtensionManagerProtocol {
             return
         }
 
+        CrashCapture.log("connectWithManager begin")
         do {
             try await connectWithManager(manager, logger: Self.logger)
         } catch {
+            CrashCapture.log("connectWithManager FAILED: \(String(describing: error))")
             Self.logger.error("connect() start vpn tunnel failed: \(String(describing: error))")
             throw error
         }
+        CrashCapture.log("connectWithManager OK, syncing widget")
         Self.logger.info("connect() started")
         // Immediately sync widget state after initiating connection
         syncWidgetState()

@@ -64,6 +64,9 @@ struct EasyTierApp: App {
         ]
         UserDefaults.standard.register(defaults: values)
         UserDefaults(suiteName: APP_GROUP_ID)?.register(defaults: sharedValues)
+#if os(iOS)
+        CrashCapture.install()
+#endif
     }
 
     var body: some Scene {
