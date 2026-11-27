@@ -108,7 +108,11 @@ class NetworkExtensionManager: NetworkExtensionManagerProtocol {
         if #available(iOS 18.0, macOS 26.0, *) {
             ControlCenter.shared.reloadControls(ofKind: "\(APP_BUNDLE_ID).control")
         }
-        WidgetCenter.shared.reloadTimelines(ofKind: "\(APP_BUNDLE_ID).widget")
+        // iOS 14: WidgetCenter reload can crash when the widget has no timeline;
+        // guard it so a widget refresh never takes down the VPN connection.
+        if #available(iOS 15.0, *) {
+            WidgetCenter.shared.reloadTimelines(ofKind: "\(APP_BUNDLE_ID).widget")
+        }
     }
     
     private func reset() {
