@@ -6,6 +6,9 @@ public let APP_GROUP_ID: String = "group.cn.easytier"
 public let ICLOUD_CONTAINER_ID: String = "iCloud.cn.easytier"
 public let LOG_FILENAME: String = "easytier.log"
 
+// Diagnostic hook injected by the app; used to trace VPN connection steps.
+public var diagLog: ((String) -> Void)?
+
 public enum LogLevel: String, Codable, CaseIterable {
     case trace = "trace"
     case debug = "debug"
@@ -287,9 +290,13 @@ private func configureManagerForConnection(_ manager: NETunnelProviderManager, l
 }
 
 public func connectWithManager(_ manager: NETunnelProviderManager, logger: Logger? = nil) async throws {
+    diagLog?("connectWithManager: configure start")
     configureManagerForConnection(manager, logger: logger)
+    diagLog?("connectWithManager: configured, saveToPreferences start")
     try await manager.saveToPreferences()
+    diagLog?("connectWithManager: saved, startVPNTunnel start")
     try manager.connection.startVPNTunnel()
+    diagLog?("connectWithManager: startVPNTunnel returned")
 }
 
 public func connectWithManager(_ manager: NETunnelProviderManager, logger: Logger? = nil, completionHandler: (@Sendable ((any Error)?) -> Void)? = nil) {

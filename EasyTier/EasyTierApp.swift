@@ -66,6 +66,7 @@ struct EasyTierApp: App {
         UserDefaults(suiteName: APP_GROUP_ID)?.register(defaults: sharedValues)
 #if os(iOS)
         CrashCapture.install()
+        diagLog = { message in CrashCapture.log(message) }
 #endif
     }
 

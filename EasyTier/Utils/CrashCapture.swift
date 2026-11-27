@@ -1,43 +1,42 @@
 import Foundation
 
-// C function pointer used by signal(). Must be a global (not stored in an enum)
-// and must not capture context.
+// Global state for C signal handlers (cannot capture context).
+private var easyTierLogURL: URL?
+private var easyTierInSignalHandler = false
+
+private func writeCrashLine(_ text: String) {
+    guard let url = easyTierLogURL,
+          let handle = try? FileHandle(forWritingTo: url) else { return }
+    handle.seekToEndOfFile()
+    handle.write(Data(text.utf8))
+    try? handle.close()
+}
+
 private let easyTierSignalHandler: @convention(c) (Int32) -> Void = { s in
-    let line = "[\(ISO8601DateFormatter().string(from: Date()))] SIGNAL \(s)\n"
-    if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
-        .appendingPathComponent("crashlog.txt"),
-       let handle = try? FileHandle(forWritingTo: url) {
-        handle.seekToEndOfFile()
-        handle.write(Data(line.utf8))
-        try? handle.close()
-    }
-    _ = sigaction(s, nil, nil)
+    // Prevent the infinite signal loop that blew up the previous log.
+    guard !easyTierInSignalHandler else { return }
+    easyTierInSignalHandler = true
+    let ts = ISO8601DateFormatter().string(from: Date())
+    let stack = Thread.callStackSymbols.prefix(30).joined(separator: "\n")
+    writeCrashLine("[\(ts)] SIGNAL \(s)\n\(stack)\n")
 }
 
-// Global exception handler (C function pointer, no captured context).
 private let easyTierExceptionHandler: @convention(c) (NSException) -> Void = { exception in
-    let reason = exception.reason ?? "unknown"
-    let stack = exception.callStackSymbols.prefix(20).joined(separator: "\n")
-    let line = "[\(ISO8601DateFormatter().string(from: Date()))] EXCEPTION \(exception.name.rawValue): \(reason)\n\(stack)\n"
-    if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
-        .appendingPathComponent("crashlog.txt"),
-       let handle = try? FileHandle(forWritingTo: url) {
-        handle.seekToEndOfFile()
-        handle.write(Data(line.utf8))
-        try? handle.close()
-    }
+    let ts = ISO8601DateFormatter().string(from: Date())
+    let stack = exception.callStackSymbols.prefix(30).joined(separator: "\n")
+    writeCrashLine("[\(ts)] EXCEPTION \(exception.name.rawValue): \(exception.reason ?? "?")\n\(stack)\n")
 }
 
-// Captures fatal signals/exceptions into Documents/crashlog.txt so crashes can
-// be inspected even when iOS produces no analytics entry (TrollStore apps).
+// Captures crashes into a timestamped file in Documents so each launch gets a
+// fresh file (never overwrites the previous one) and Files.app can export it.
 enum CrashCapture {
-    private static let logURL: URL? = {
-        FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
-            .appendingPathComponent("crashlog.txt")
-    }()
-
     static func install() {
-        log("app launched build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "?")")
+        let fmt = DateFormatter()
+        fmt.dateFormat = "yyyyMMdd-HHmmss"
+        let name = "crashlog-\(fmt.string(from: Date())).txt"
+        easyTierLogURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
+            .appendingPathComponent(name)
+        log("app launched build \(Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") ?? "?") file=\(name)")
         NSSetUncaughtExceptionHandler(easyTierExceptionHandler)
         for sig in [SIGABRT, SIGILL, SIGSEGV, SIGFPE, SIGBUS, SIGTRAP] {
             signal(sig, easyTierSignalHandler)
@@ -45,14 +44,7 @@ enum CrashCapture {
     }
 
     static func log(_ message: String) {
-        guard let url = logURL else { return }
         let line = "[\(ISO8601DateFormatter().string(from: Date()))] \(message)\n"
-        if let handle = try? FileHandle(forWritingTo: url) {
-            handle.seekToEndOfFile()
-            handle.write(Data(line.utf8))
-            try? handle.close()
-        } else {
-            try? line.write(to: url, atomically: true, encoding: .utf8)
-        }
+        writeCrashLine(line)
     }
 }
