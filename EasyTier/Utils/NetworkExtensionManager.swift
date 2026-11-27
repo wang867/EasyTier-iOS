@@ -242,7 +242,15 @@ class NetworkExtensionManager: NetworkExtensionManagerProtocol {
             Self.logger.warning("connect() failed: not loaded")
             return
         }
-        if status == .invalid {
+        // iOS 14 fix: when returning from the system VPN-install screen the
+        // in-memory status is still .invalid even though the profile now exists.
+        // Re-running install()/saveToPreferences() at that point corrupts the
+        // tunnel state and crashes. Always load existing profiles first; only
+        // install when none exist.
+        if status == .invalid || manager == nil {
+            try await load()
+        }
+        if manager == nil {
             _ = try await NetworkExtensionManager.install()
             try await load()
         }
