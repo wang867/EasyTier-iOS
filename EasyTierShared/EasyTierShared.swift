@@ -265,8 +265,14 @@ public enum TunnelManagerError: LocalizedError {
 private func configureManagerForConnection(_ manager: NETunnelProviderManager, logger: Logger?) {
     manager.isEnabled = true
     if let defaults = UserDefaults(suiteName: APP_GROUP_ID) {
-        manager.protocolConfiguration?.includeAllNetworks = defaults.bool(forKey: "includeAllNetworks")
-        manager.protocolConfiguration?.excludeLocalNetworks = defaults.bool(forKey: "excludeLocalNetworks")
+        // iOS 14 fix: setting excludeLocalNetworks / enforceRoutes on iOS 14
+        // crashes NetworkExtension internally (SIGSEGV/SIGBUS) inside
+        // startVPNTunnel. These routing knobs require iOS 15+ to set safely.
+        if #available(iOS 15.0, *) {
+            manager.protocolConfiguration?.includeAllNetworks = defaults.bool(forKey: "includeAllNetworks")
+            manager.protocolConfiguration?.excludeLocalNetworks = defaults.bool(forKey: "excludeLocalNetworks")
+            manager.protocolConfiguration?.enforceRoutes = defaults.bool(forKey: "enforceRoutes")
+        }
         if #available(iOS 16.4, macOS 13.3, *) {
             manager.protocolConfiguration?.excludeCellularServices = defaults.bool(forKey: "excludeCellularServices")
             manager.protocolConfiguration?.excludeAPNs = defaults.bool(forKey: "excludeAPNs")
@@ -274,7 +280,6 @@ private func configureManagerForConnection(_ manager: NETunnelProviderManager, l
         if #available(iOS 17.4, macOS 14.4, *) {
             manager.protocolConfiguration?.excludeDeviceCommunication = defaults.bool(forKey: "excludeDeviceCommunication")
         }
-        manager.protocolConfiguration?.enforceRoutes = defaults.bool(forKey: "enforceRoutes")
         if let logger {
             logger.debug("connect with protocol configuration: \(manager.protocolConfiguration)")
         }
