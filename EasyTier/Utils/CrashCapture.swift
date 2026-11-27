@@ -18,11 +18,21 @@ enum CrashCapture {
             log("EXCEPTION \(exception.name.rawValue): \(reason)\n\(stack)")
         }
         for sig in [SIGABRT, SIGILL, SIGSEGV, SIGFPE, SIGBUS, SIGTRAP] {
-            signal(sig) { s in
-                log("SIGNAL \(s) at \(Thread.callStackSymbols.prefix(12).joined(separator: "\n"))")
-                _ = sigaction(s, nil, nil)
-            }
+            signal(sig, signalHandler)
         }
+    }
+
+    // C function pointer: must not capture context.
+    private let signalHandler: @convention(c) (Int32) -> Void = { s in
+        let line = "[\(ISO8601DateFormatter().string(from: Date()))] SIGNAL \(s)\n"
+        if let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("crashlog.txt"),
+           let handle = try? FileHandle(forWritingTo: url) {
+            handle.seekToEndOfFile()
+            handle.write(Data(line.utf8))
+            try? handle.close()
+        }
+        _ = sigaction(s, nil, nil)
     }
 
     static func log(_ message: String) {
